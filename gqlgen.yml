@@ -29,7 +29,7 @@ exec:
 model:
   filename: graph/model/models_gen.go
   package: model
-
+  
   # Optional: Pass in a path to a new gotpl template to use for generating the models
   # model_template: [your/path/model.gotpl]
 
@@ -153,3 +153,6 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
+  
+  Time:                   # ✅ Tell gqlgen that Time maps to model.Time
+    model: sadewa-portfolio-svc/graph/model.Time

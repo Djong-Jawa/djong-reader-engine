@@ -1,3 +1,5 @@
+scalar Time
+
 type Portfolio {
     id: ID!
     title: String!
@@ -6,9 +8,9 @@ type Portfolio {
     frontendStack: String
     databaseStack: String
     deploymentStack: String
-    createdAt: String
+    createdAt: Time!
     createdBy: String
-    updatedAt: String
+    updatedAt: Time
     updatedBy: String
     isActive: Boolean!
 }

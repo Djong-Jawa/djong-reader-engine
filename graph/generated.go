@@ -1131,11 +1131,14 @@ func (ec *executionContext) _Portfolio_createdAt(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(model.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNTime2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Portfolio_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1145,7 +1148,7 @@ func (ec *executionContext) fieldContext_Portfolio_createdAt(_ context.Context, 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1215,9 +1218,9 @@ func (ec *executionContext) _Portfolio_updatedAt(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Portfolio_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1227,7 +1230,7 @@ func (ec *executionContext) fieldContext_Portfolio_updatedAt(_ context.Context, 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3735,6 +3738,9 @@ func (ec *executionContext) _Portfolio(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = ec._Portfolio_deploymentStack(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._Portfolio_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createdBy":
 			out.Values[i] = ec._Portfolio_createdBy(ctx, field, obj)
 		case "updatedAt":
@@ -4303,6 +4309,16 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNTime2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐTime(ctx context.Context, v any) (model.Time, error) {
+	var res model.Time
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v model.Time) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
 	return ec.___Directive(ctx, sel, &v)
 }
@@ -4601,6 +4617,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐTime(ctx context.Context, v any) (*model.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.Time)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v *model.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

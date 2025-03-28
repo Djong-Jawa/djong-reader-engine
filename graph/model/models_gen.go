@@ -13,9 +13,9 @@ type Portfolio struct {
 	FrontendStack   *string `json:"frontendStack,omitempty"`
 	DatabaseStack   *string `json:"databaseStack,omitempty"`
 	DeploymentStack *string `json:"deploymentStack,omitempty"`
-	CreatedAt       *string `json:"createdAt,omitempty"`
+	CreatedAt       Time    `json:"createdAt"`
 	CreatedBy       *string `json:"createdBy,omitempty"`
-	UpdatedAt       *string `json:"updatedAt,omitempty"`
+	UpdatedAt       *Time   `json:"updatedAt,omitempty"`
 	UpdatedBy       *string `json:"updatedBy,omitempty"`
 	IsActive        bool    `json:"isActive"`
 }
