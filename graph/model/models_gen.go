@@ -5,22 +5,32 @@ package model
 type Mutation struct {
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Portfolio struct {
+	ID              string  `json:"id"`
+	Title           string  `json:"title"`
+	Description     *string `json:"description,omitempty"`
+	BackendStack    *string `json:"backendStack,omitempty"`
+	FrontendStack   *string `json:"frontendStack,omitempty"`
+	DatabaseStack   *string `json:"databaseStack,omitempty"`
+	DeploymentStack *string `json:"deploymentStack,omitempty"`
+	CreatedAt       *string `json:"createdAt,omitempty"`
+	CreatedBy       *string `json:"createdBy,omitempty"`
+	UpdatedAt       *string `json:"updatedAt,omitempty"`
+	UpdatedBy       *string `json:"updatedBy,omitempty"`
+	IsActive        bool    `json:"isActive"`
+}
+
+type PortfolioInput struct {
+	Title           string  `json:"title"`
+	Description     *string `json:"description,omitempty"`
+	BackendStack    *string `json:"backendStack,omitempty"`
+	FrontendStack   *string `json:"frontendStack,omitempty"`
+	DatabaseStack   *string `json:"databaseStack,omitempty"`
+	DeploymentStack *string `json:"deploymentStack,omitempty"`
+	CreatedBy       *string `json:"createdBy,omitempty"`
+	UpdatedBy       *string `json:"updatedBy,omitempty"`
+	IsActive        bool    `json:"isActive"`
 }
 
 type Query struct {
-}
-
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }
