@@ -18,6 +18,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	// profile log
 	fmt.Println(`
 					  _           _   _                _                  _ 
   __ _ _ __ __ _ _ __ | |__   __ _| | | |__   __ _  ___| | _____ _ __   __| |
@@ -26,8 +27,8 @@ func main() {
  \__, |_|  \__,_| .__/|_| |_|\__, |_| |_.__/ \__,_|\___|_|\_\___|_| |_|\__,_|
  |___/          |_|             |_|                                          
  `)
-  
-
+	
+	// connect to db
 	config.ConnectDB()
 	http.Handle("/", handler.Playground("GraphQL Playground", "/query"))
 	http.Handle("/query", handler.GraphQL(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}})))
