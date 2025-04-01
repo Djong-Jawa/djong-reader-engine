@@ -1,4 +1,3 @@
-scalar Time
 
 type Portfolio {
     id: ID!
@@ -15,12 +14,12 @@ type Portfolio {
     isActive: Boolean!
 }
 
-type Query {
+type PortfolioQuery {
     portfolios: [Portfolio!]!
     portfolio(id: ID!): Portfolio
 }
 
-type Mutation {
+type PortfolioMutation {
     createPortfolio(input: PortfolioInput!): Portfolio!
     updatePortfolio(id: ID!, input: PortfolioInput!): Portfolio!
     deletePortfolio(id: ID!): Boolean!
