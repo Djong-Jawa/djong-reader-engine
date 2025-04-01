@@ -6,7 +6,7 @@ import (
 
 	"github.com/99designs/gqlgen/handler"
 	"sadewa-portfolio-svc/config"
-	"sadewa-portfolio-svc/graph"
+	"sadewa-portfolio-svc/graph/resolvers"
 	"github.com/joho/godotenv"
 	"os"
 	"fmt"

@@ -23,15 +23,7 @@ type ExperienceInput struct {
 	IsActive      bool    `json:"isActive"`
 }
 
-type ExperienceMutation struct {
-	CreateExperience *Experience `json:"createExperience"`
-	UpdateExperience *Experience `json:"updateExperience"`
-	DeleteExperience bool        `json:"deleteExperience"`
-}
-
-type ExperienceQuery struct {
-	Experiences []*Experience `json:"experiences"`
-	Experience  *Experience   `json:"experience,omitempty"`
+type Mutation struct {
 }
 
 type Portfolio struct {
@@ -59,17 +51,6 @@ type PortfolioInput struct {
 	CreatedBy       *string `json:"createdBy,omitempty"`
 	UpdatedBy       *string `json:"updatedBy,omitempty"`
 	IsActive        bool    `json:"isActive"`
-}
-
-type PortfolioMutation struct {
-	CreatePortfolio *Portfolio `json:"createPortfolio"`
-	UpdatePortfolio *Portfolio `json:"updatePortfolio"`
-	DeletePortfolio bool       `json:"deletePortfolio"`
-}
-
-type PortfolioQuery struct {
-	Portfolios []*Portfolio `json:"portfolios"`
-	Portfolio  *Portfolio   `json:"portfolio,omitempty"`
 }
 
 type Query struct {

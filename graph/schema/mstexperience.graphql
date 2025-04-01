@@ -12,12 +12,12 @@ type Experience {
     isActive: Boolean!
 }
 
-type ExperienceQuery {
+extend type Query {
     experiences: [Experience!]!
     experience(id: ID!): Experience
 }
 
-type ExperienceMutation{
+extend type Mutation{
     createExperience(input: ExperienceInput!): Experience!
     updateExperience(id: ID!, input: ExperienceInput!): Experience!
     deleteExperience(id: ID!): Boolean!

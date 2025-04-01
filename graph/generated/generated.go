@@ -38,6 +38,8 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Mutation() MutationResolver
+	Query() QueryResolver
 }
 
 type DirectiveRoot struct {
@@ -56,15 +58,13 @@ type ComplexityRoot struct {
 		UpdatedBy     func(childComplexity int) int
 	}
 
-	ExperienceMutation struct {
+	Mutation struct {
 		CreateExperience func(childComplexity int, input model.ExperienceInput) int
+		CreatePortfolio  func(childComplexity int, input model.PortfolioInput) int
 		DeleteExperience func(childComplexity int, id string) int
+		DeletePortfolio  func(childComplexity int, id string) int
 		UpdateExperience func(childComplexity int, id string, input model.ExperienceInput) int
-	}
-
-	ExperienceQuery struct {
-		Experience  func(childComplexity int, id string) int
-		Experiences func(childComplexity int) int
+		UpdatePortfolio  func(childComplexity int, id string, input model.PortfolioInput) int
 	}
 
 	Portfolio struct {
@@ -82,19 +82,27 @@ type ComplexityRoot struct {
 		UpdatedBy       func(childComplexity int) int
 	}
 
-	PortfolioMutation struct {
-		CreatePortfolio func(childComplexity int, input model.PortfolioInput) int
-		DeletePortfolio func(childComplexity int, id string) int
-		UpdatePortfolio func(childComplexity int, id string, input model.PortfolioInput) int
-	}
-
-	PortfolioQuery struct {
-		Portfolio  func(childComplexity int, id string) int
-		Portfolios func(childComplexity int) int
-	}
-
 	Query struct {
+		Experience  func(childComplexity int, id string) int
+		Experiences func(childComplexity int) int
+		Portfolio   func(childComplexity int, id string) int
+		Portfolios  func(childComplexity int) int
 	}
+}
+
+type MutationResolver interface {
+	CreateExperience(ctx context.Context, input model.ExperienceInput) (*model.Experience, error)
+	UpdateExperience(ctx context.Context, id string, input model.ExperienceInput) (*model.Experience, error)
+	DeleteExperience(ctx context.Context, id string) (bool, error)
+	CreatePortfolio(ctx context.Context, input model.PortfolioInput) (*model.Portfolio, error)
+	UpdatePortfolio(ctx context.Context, id string, input model.PortfolioInput) (*model.Portfolio, error)
+	DeletePortfolio(ctx context.Context, id string) (bool, error)
+}
+type QueryResolver interface {
+	Experiences(ctx context.Context) ([]*model.Experience, error)
+	Experience(ctx context.Context, id string) (*model.Experience, error)
+	Portfolios(ctx context.Context) ([]*model.Portfolio, error)
+	Portfolio(ctx context.Context, id string) (*model.Portfolio, error)
 }
 
 type executableSchema struct {
@@ -179,60 +187,77 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Experience.UpdatedBy(childComplexity), true
 
-	case "ExperienceMutation.createExperience":
-		if e.complexity.ExperienceMutation.CreateExperience == nil {
+	case "Mutation.createExperience":
+		if e.complexity.Mutation.CreateExperience == nil {
 			break
 		}
 
-		args, err := ec.field_ExperienceMutation_createExperience_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createExperience_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.ExperienceMutation.CreateExperience(childComplexity, args["input"].(model.ExperienceInput)), true
+		return e.complexity.Mutation.CreateExperience(childComplexity, args["input"].(model.ExperienceInput)), true
 
-	case "ExperienceMutation.deleteExperience":
-		if e.complexity.ExperienceMutation.DeleteExperience == nil {
+	case "Mutation.createPortfolio":
+		if e.complexity.Mutation.CreatePortfolio == nil {
 			break
 		}
 
-		args, err := ec.field_ExperienceMutation_deleteExperience_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createPortfolio_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.ExperienceMutation.DeleteExperience(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.CreatePortfolio(childComplexity, args["input"].(model.PortfolioInput)), true
 
-	case "ExperienceMutation.updateExperience":
-		if e.complexity.ExperienceMutation.UpdateExperience == nil {
+	case "Mutation.deleteExperience":
+		if e.complexity.Mutation.DeleteExperience == nil {
 			break
 		}
 
-		args, err := ec.field_ExperienceMutation_updateExperience_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deleteExperience_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.ExperienceMutation.UpdateExperience(childComplexity, args["id"].(string), args["input"].(model.ExperienceInput)), true
+		return e.complexity.Mutation.DeleteExperience(childComplexity, args["id"].(string)), true
 
-	case "ExperienceQuery.experience":
-		if e.complexity.ExperienceQuery.Experience == nil {
+	case "Mutation.deletePortfolio":
+		if e.complexity.Mutation.DeletePortfolio == nil {
 			break
 		}
 
-		args, err := ec.field_ExperienceQuery_experience_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deletePortfolio_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.ExperienceQuery.Experience(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeletePortfolio(childComplexity, args["id"].(string)), true
 
-	case "ExperienceQuery.experiences":
-		if e.complexity.ExperienceQuery.Experiences == nil {
+	case "Mutation.updateExperience":
+		if e.complexity.Mutation.UpdateExperience == nil {
 			break
 		}
 
-		return e.complexity.ExperienceQuery.Experiences(childComplexity), true
+		args, err := ec.field_Mutation_updateExperience_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateExperience(childComplexity, args["id"].(string), args["input"].(model.ExperienceInput)), true
+
+	case "Mutation.updatePortfolio":
+		if e.complexity.Mutation.UpdatePortfolio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatePortfolio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatePortfolio(childComplexity, args["id"].(string), args["input"].(model.PortfolioInput)), true
 
 	case "Portfolio.backendStack":
 		if e.complexity.Portfolio.BackendStack == nil {
@@ -318,60 +343,43 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Portfolio.UpdatedBy(childComplexity), true
 
-	case "PortfolioMutation.createPortfolio":
-		if e.complexity.PortfolioMutation.CreatePortfolio == nil {
+	case "Query.experience":
+		if e.complexity.Query.Experience == nil {
 			break
 		}
 
-		args, err := ec.field_PortfolioMutation_createPortfolio_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_experience_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.PortfolioMutation.CreatePortfolio(childComplexity, args["input"].(model.PortfolioInput)), true
+		return e.complexity.Query.Experience(childComplexity, args["id"].(string)), true
 
-	case "PortfolioMutation.deletePortfolio":
-		if e.complexity.PortfolioMutation.DeletePortfolio == nil {
+	case "Query.experiences":
+		if e.complexity.Query.Experiences == nil {
 			break
 		}
 
-		args, err := ec.field_PortfolioMutation_deletePortfolio_args(context.TODO(), rawArgs)
+		return e.complexity.Query.Experiences(childComplexity), true
+
+	case "Query.portfolio":
+		if e.complexity.Query.Portfolio == nil {
+			break
+		}
+
+		args, err := ec.field_Query_portfolio_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.PortfolioMutation.DeletePortfolio(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Portfolio(childComplexity, args["id"].(string)), true
 
-	case "PortfolioMutation.updatePortfolio":
-		if e.complexity.PortfolioMutation.UpdatePortfolio == nil {
+	case "Query.portfolios":
+		if e.complexity.Query.Portfolios == nil {
 			break
 		}
 
-		args, err := ec.field_PortfolioMutation_updatePortfolio_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.PortfolioMutation.UpdatePortfolio(childComplexity, args["id"].(string), args["input"].(model.PortfolioInput)), true
-
-	case "PortfolioQuery.portfolio":
-		if e.complexity.PortfolioQuery.Portfolio == nil {
-			break
-		}
-
-		args, err := ec.field_PortfolioQuery_portfolio_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.PortfolioQuery.Portfolio(childComplexity, args["id"].(string)), true
-
-	case "PortfolioQuery.portfolios":
-		if e.complexity.PortfolioQuery.Portfolios == nil {
-			break
-		}
-
-		return e.complexity.PortfolioQuery.Portfolios(childComplexity), true
+		return e.complexity.Query.Portfolios(childComplexity), true
 
 	}
 	return 0, false
@@ -416,6 +424,21 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			}
 
 			return &response
+		}
+	case ast.Mutation:
+		return func(ctx context.Context) *graphql.Response {
+			if !first {
+				return nil
+			}
+			first = false
+			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+			data := ec._Mutation(ctx, opCtx.Operation.SelectionSet)
+			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
 		}
 
 	default:
@@ -479,12 +502,12 @@ type Experience {
     isActive: Boolean!
 }
 
-type ExperienceQuery {
+extend type Query {
     experiences: [Experience!]!
     experience(id: ID!): Experience
 }
 
-type ExperienceMutation{
+extend type Mutation{
     createExperience(input: ExperienceInput!): Experience!
     updateExperience(id: ID!, input: ExperienceInput!): Experience!
     deleteExperience(id: ID!): Boolean!
@@ -514,12 +537,12 @@ type Portfolio {
     isActive: Boolean!
 }
 
-type PortfolioQuery {
+extend type Query {
     portfolios: [Portfolio!]!
     portfolio(id: ID!): Portfolio
 }
 
-type PortfolioMutation {
+extend type Mutation {
     createPortfolio(input: PortfolioInput!): Portfolio!
     updatePortfolio(id: ID!, input: PortfolioInput!): Portfolio!
     deletePortfolio(id: ID!): Boolean!
@@ -544,17 +567,17 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_ExperienceMutation_createExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_createExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_ExperienceMutation_createExperience_argsInput(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_createExperience_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_ExperienceMutation_createExperience_argsInput(
+func (ec *executionContext) field_Mutation_createExperience_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (model.ExperienceInput, error) {
@@ -567,17 +590,40 @@ func (ec *executionContext) field_ExperienceMutation_createExperience_argsInput(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_ExperienceMutation_deleteExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_createPortfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_ExperienceMutation_deleteExperience_argsID(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_createPortfolio_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_createPortfolio_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.PortfolioInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNPortfolioInput2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioInput(ctx, tmp)
+	}
+
+	var zeroVal model.PortfolioInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteExperience_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_ExperienceMutation_deleteExperience_argsID(
+func (ec *executionContext) field_Mutation_deleteExperience_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (string, error) {
@@ -590,22 +636,45 @@ func (ec *executionContext) field_ExperienceMutation_deleteExperience_argsID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_ExperienceMutation_updateExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_deletePortfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_ExperienceMutation_updateExperience_argsID(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_deletePortfolio_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["id"] = arg0
-	arg1, err := ec.field_ExperienceMutation_updateExperience_argsInput(ctx, rawArgs)
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deletePortfolio_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateExperience_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := ec.field_Mutation_updateExperience_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["input"] = arg1
 	return args, nil
 }
-func (ec *executionContext) field_ExperienceMutation_updateExperience_argsID(
+func (ec *executionContext) field_Mutation_updateExperience_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (string, error) {
@@ -618,7 +687,7 @@ func (ec *executionContext) field_ExperienceMutation_updateExperience_argsID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_ExperienceMutation_updateExperience_argsInput(
+func (ec *executionContext) field_Mutation_updateExperience_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (model.ExperienceInput, error) {
@@ -631,91 +700,22 @@ func (ec *executionContext) field_ExperienceMutation_updateExperience_argsInput(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_ExperienceQuery_experience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_updatePortfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_ExperienceQuery_experience_argsID(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_updatePortfolio_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["id"] = arg0
-	return args, nil
-}
-func (ec *executionContext) field_ExperienceQuery_experience_argsID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-	if tmp, ok := rawArgs["id"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
-	}
-
-	var zeroVal string
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_PortfolioMutation_createPortfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_PortfolioMutation_createPortfolio_argsInput(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["input"] = arg0
-	return args, nil
-}
-func (ec *executionContext) field_PortfolioMutation_createPortfolio_argsInput(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (model.PortfolioInput, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNPortfolioInput2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioInput(ctx, tmp)
-	}
-
-	var zeroVal model.PortfolioInput
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_PortfolioMutation_deletePortfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_PortfolioMutation_deletePortfolio_argsID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["id"] = arg0
-	return args, nil
-}
-func (ec *executionContext) field_PortfolioMutation_deletePortfolio_argsID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-	if tmp, ok := rawArgs["id"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
-	}
-
-	var zeroVal string
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_PortfolioMutation_updatePortfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_PortfolioMutation_updatePortfolio_argsID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["id"] = arg0
-	arg1, err := ec.field_PortfolioMutation_updatePortfolio_argsInput(ctx, rawArgs)
+	arg1, err := ec.field_Mutation_updatePortfolio_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["input"] = arg1
 	return args, nil
 }
-func (ec *executionContext) field_PortfolioMutation_updatePortfolio_argsID(
+func (ec *executionContext) field_Mutation_updatePortfolio_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (string, error) {
@@ -728,7 +728,7 @@ func (ec *executionContext) field_PortfolioMutation_updatePortfolio_argsID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_PortfolioMutation_updatePortfolio_argsInput(
+func (ec *executionContext) field_Mutation_updatePortfolio_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (model.PortfolioInput, error) {
@@ -738,29 +738,6 @@ func (ec *executionContext) field_PortfolioMutation_updatePortfolio_argsInput(
 	}
 
 	var zeroVal model.PortfolioInput
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_PortfolioQuery_portfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_PortfolioQuery_portfolio_argsID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["id"] = arg0
-	return args, nil
-}
-func (ec *executionContext) field_PortfolioQuery_portfolio_argsID(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-	if tmp, ok := rawArgs["id"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
-	}
-
-	var zeroVal string
 	return zeroVal, nil
 }
 
@@ -781,6 +758,52 @@ func (ec *executionContext) field_Query___type_argsName(
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 	if tmp, ok := rawArgs["name"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_experience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_experience_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_experience_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_portfolio_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_portfolio_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_portfolio_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
 	}
 
 	var zeroVal string
@@ -1274,8 +1297,8 @@ func (ec *executionContext) fieldContext_Experience_isActive(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _ExperienceMutation_createExperience(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceMutation) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ExperienceMutation_createExperience(ctx, field)
+func (ec *executionContext) _Mutation_createExperience(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createExperience(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1288,7 +1311,7 @@ func (ec *executionContext) _ExperienceMutation_createExperience(ctx context.Con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreateExperience, nil
+		return ec.resolvers.Mutation().CreateExperience(rctx, fc.Args["input"].(model.ExperienceInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1305,12 +1328,12 @@ func (ec *executionContext) _ExperienceMutation_createExperience(ctx context.Con
 	return ec.marshalNExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperience(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ExperienceMutation_createExperience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_createExperience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ExperienceMutation",
+		Object:     "Mutation",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1342,15 +1365,15 @@ func (ec *executionContext) fieldContext_ExperienceMutation_createExperience(ctx
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_ExperienceMutation_createExperience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_createExperience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _ExperienceMutation_updateExperience(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceMutation) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ExperienceMutation_updateExperience(ctx, field)
+func (ec *executionContext) _Mutation_updateExperience(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateExperience(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1363,7 +1386,7 @@ func (ec *executionContext) _ExperienceMutation_updateExperience(ctx context.Con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.UpdateExperience, nil
+		return ec.resolvers.Mutation().UpdateExperience(rctx, fc.Args["id"].(string), fc.Args["input"].(model.ExperienceInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1380,12 +1403,12 @@ func (ec *executionContext) _ExperienceMutation_updateExperience(ctx context.Con
 	return ec.marshalNExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperience(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ExperienceMutation_updateExperience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_updateExperience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ExperienceMutation",
+		Object:     "Mutation",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1417,15 +1440,15 @@ func (ec *executionContext) fieldContext_ExperienceMutation_updateExperience(ctx
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_ExperienceMutation_updateExperience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_updateExperience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _ExperienceMutation_deleteExperience(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceMutation) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ExperienceMutation_deleteExperience(ctx, field)
+func (ec *executionContext) _Mutation_deleteExperience(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteExperience(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1438,7 +1461,7 @@ func (ec *executionContext) _ExperienceMutation_deleteExperience(ctx context.Con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.DeleteExperience, nil
+		return ec.resolvers.Mutation().DeleteExperience(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1455,12 +1478,12 @@ func (ec *executionContext) _ExperienceMutation_deleteExperience(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ExperienceMutation_deleteExperience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_deleteExperience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ExperienceMutation",
+		Object:     "Mutation",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
@@ -1472,15 +1495,15 @@ func (ec *executionContext) fieldContext_ExperienceMutation_deleteExperience(ctx
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_ExperienceMutation_deleteExperience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_deleteExperience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _ExperienceQuery_experiences(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceQuery) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ExperienceQuery_experiences(ctx, field)
+func (ec *executionContext) _Mutation_createPortfolio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createPortfolio(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1493,7 +1516,7 @@ func (ec *executionContext) _ExperienceQuery_experiences(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Experiences, nil
+		return ec.resolvers.Mutation().CreatePortfolio(rctx, fc.Args["input"].(model.PortfolioInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1505,46 +1528,63 @@ func (ec *executionContext) _ExperienceQuery_experiences(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Experience)
+	res := resTmp.(*model.Portfolio)
 	fc.Result = res
-	return ec.marshalNExperience2ᚕᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperienceᚄ(ctx, field.Selections, res)
+	return ec.marshalNPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolio(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ExperienceQuery_experiences(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_createPortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ExperienceQuery",
+		Object:     "Mutation",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Experience_id(ctx, field)
-			case "jobTitle":
-				return ec.fieldContext_Experience_jobTitle(ctx, field)
-			case "jobStartDate":
-				return ec.fieldContext_Experience_jobStartDate(ctx, field)
-			case "jobFinishDate":
-				return ec.fieldContext_Experience_jobFinishDate(ctx, field)
+				return ec.fieldContext_Portfolio_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Portfolio_title(ctx, field)
+			case "description":
+				return ec.fieldContext_Portfolio_description(ctx, field)
+			case "backendStack":
+				return ec.fieldContext_Portfolio_backendStack(ctx, field)
+			case "frontendStack":
+				return ec.fieldContext_Portfolio_frontendStack(ctx, field)
+			case "databaseStack":
+				return ec.fieldContext_Portfolio_databaseStack(ctx, field)
+			case "deploymentStack":
+				return ec.fieldContext_Portfolio_deploymentStack(ctx, field)
 			case "createdAt":
-				return ec.fieldContext_Experience_createdAt(ctx, field)
+				return ec.fieldContext_Portfolio_createdAt(ctx, field)
 			case "createdBy":
-				return ec.fieldContext_Experience_createdBy(ctx, field)
+				return ec.fieldContext_Portfolio_createdBy(ctx, field)
 			case "updatedAt":
-				return ec.fieldContext_Experience_updatedAt(ctx, field)
+				return ec.fieldContext_Portfolio_updatedAt(ctx, field)
 			case "updatedBy":
-				return ec.fieldContext_Experience_updatedBy(ctx, field)
+				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
 			case "isActive":
-				return ec.fieldContext_Experience_isActive(ctx, field)
+				return ec.fieldContext_Portfolio_isActive(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createPortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _ExperienceQuery_experience(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceQuery) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ExperienceQuery_experience(ctx, field)
+func (ec *executionContext) _Mutation_updatePortfolio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updatePortfolio(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1557,48 +1597,57 @@ func (ec *executionContext) _ExperienceQuery_experience(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Experience, nil
+		return ec.resolvers.Mutation().UpdatePortfolio(rctx, fc.Args["id"].(string), fc.Args["input"].(model.PortfolioInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Experience)
+	res := resTmp.(*model.Portfolio)
 	fc.Result = res
-	return ec.marshalOExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperience(ctx, field.Selections, res)
+	return ec.marshalNPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolio(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ExperienceQuery_experience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_updatePortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ExperienceQuery",
+		Object:     "Mutation",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Experience_id(ctx, field)
-			case "jobTitle":
-				return ec.fieldContext_Experience_jobTitle(ctx, field)
-			case "jobStartDate":
-				return ec.fieldContext_Experience_jobStartDate(ctx, field)
-			case "jobFinishDate":
-				return ec.fieldContext_Experience_jobFinishDate(ctx, field)
+				return ec.fieldContext_Portfolio_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Portfolio_title(ctx, field)
+			case "description":
+				return ec.fieldContext_Portfolio_description(ctx, field)
+			case "backendStack":
+				return ec.fieldContext_Portfolio_backendStack(ctx, field)
+			case "frontendStack":
+				return ec.fieldContext_Portfolio_frontendStack(ctx, field)
+			case "databaseStack":
+				return ec.fieldContext_Portfolio_databaseStack(ctx, field)
+			case "deploymentStack":
+				return ec.fieldContext_Portfolio_deploymentStack(ctx, field)
 			case "createdAt":
-				return ec.fieldContext_Experience_createdAt(ctx, field)
+				return ec.fieldContext_Portfolio_createdAt(ctx, field)
 			case "createdBy":
-				return ec.fieldContext_Experience_createdBy(ctx, field)
+				return ec.fieldContext_Portfolio_createdBy(ctx, field)
 			case "updatedAt":
-				return ec.fieldContext_Experience_updatedAt(ctx, field)
+				return ec.fieldContext_Portfolio_updatedAt(ctx, field)
 			case "updatedBy":
-				return ec.fieldContext_Experience_updatedBy(ctx, field)
+				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
 			case "isActive":
-				return ec.fieldContext_Experience_isActive(ctx, field)
+				return ec.fieldContext_Portfolio_isActive(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
 	}
 	defer func() {
@@ -1608,7 +1657,62 @@ func (ec *executionContext) fieldContext_ExperienceQuery_experience(ctx context.
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_ExperienceQuery_experience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_updatePortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deletePortfolio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deletePortfolio(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeletePortfolio(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deletePortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deletePortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2119,8 +2223,8 @@ func (ec *executionContext) fieldContext_Portfolio_isActive(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _PortfolioMutation_createPortfolio(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioMutation) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PortfolioMutation_createPortfolio(ctx, field)
+func (ec *executionContext) _Query_experiences(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_experiences(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2133,7 +2237,7 @@ func (ec *executionContext) _PortfolioMutation_createPortfolio(ctx context.Conte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatePortfolio, nil
+		return ec.resolvers.Query().Experiences(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2145,63 +2249,46 @@ func (ec *executionContext) _PortfolioMutation_createPortfolio(ctx context.Conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Portfolio)
+	res := resTmp.([]*model.Experience)
 	fc.Result = res
-	return ec.marshalNPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolio(ctx, field.Selections, res)
+	return ec.marshalNExperience2ᚕᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperienceᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PortfolioMutation_createPortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_experiences(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PortfolioMutation",
+		Object:     "Query",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Portfolio_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Portfolio_title(ctx, field)
-			case "description":
-				return ec.fieldContext_Portfolio_description(ctx, field)
-			case "backendStack":
-				return ec.fieldContext_Portfolio_backendStack(ctx, field)
-			case "frontendStack":
-				return ec.fieldContext_Portfolio_frontendStack(ctx, field)
-			case "databaseStack":
-				return ec.fieldContext_Portfolio_databaseStack(ctx, field)
-			case "deploymentStack":
-				return ec.fieldContext_Portfolio_deploymentStack(ctx, field)
+				return ec.fieldContext_Experience_id(ctx, field)
+			case "jobTitle":
+				return ec.fieldContext_Experience_jobTitle(ctx, field)
+			case "jobStartDate":
+				return ec.fieldContext_Experience_jobStartDate(ctx, field)
+			case "jobFinishDate":
+				return ec.fieldContext_Experience_jobFinishDate(ctx, field)
 			case "createdAt":
-				return ec.fieldContext_Portfolio_createdAt(ctx, field)
+				return ec.fieldContext_Experience_createdAt(ctx, field)
 			case "createdBy":
-				return ec.fieldContext_Portfolio_createdBy(ctx, field)
+				return ec.fieldContext_Experience_createdBy(ctx, field)
 			case "updatedAt":
-				return ec.fieldContext_Portfolio_updatedAt(ctx, field)
+				return ec.fieldContext_Experience_updatedAt(ctx, field)
 			case "updatedBy":
-				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
+				return ec.fieldContext_Experience_updatedBy(ctx, field)
 			case "isActive":
-				return ec.fieldContext_Portfolio_isActive(ctx, field)
+				return ec.fieldContext_Experience_isActive(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_PortfolioMutation_createPortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _PortfolioMutation_updatePortfolio(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioMutation) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PortfolioMutation_updatePortfolio(ctx, field)
+func (ec *executionContext) _Query_experience(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_experience(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2214,57 +2301,48 @@ func (ec *executionContext) _PortfolioMutation_updatePortfolio(ctx context.Conte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.UpdatePortfolio, nil
+		return ec.resolvers.Query().Experience(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Portfolio)
+	res := resTmp.(*model.Experience)
 	fc.Result = res
-	return ec.marshalNPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolio(ctx, field.Selections, res)
+	return ec.marshalOExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperience(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PortfolioMutation_updatePortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_experience(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PortfolioMutation",
+		Object:     "Query",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Portfolio_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Portfolio_title(ctx, field)
-			case "description":
-				return ec.fieldContext_Portfolio_description(ctx, field)
-			case "backendStack":
-				return ec.fieldContext_Portfolio_backendStack(ctx, field)
-			case "frontendStack":
-				return ec.fieldContext_Portfolio_frontendStack(ctx, field)
-			case "databaseStack":
-				return ec.fieldContext_Portfolio_databaseStack(ctx, field)
-			case "deploymentStack":
-				return ec.fieldContext_Portfolio_deploymentStack(ctx, field)
+				return ec.fieldContext_Experience_id(ctx, field)
+			case "jobTitle":
+				return ec.fieldContext_Experience_jobTitle(ctx, field)
+			case "jobStartDate":
+				return ec.fieldContext_Experience_jobStartDate(ctx, field)
+			case "jobFinishDate":
+				return ec.fieldContext_Experience_jobFinishDate(ctx, field)
 			case "createdAt":
-				return ec.fieldContext_Portfolio_createdAt(ctx, field)
+				return ec.fieldContext_Experience_createdAt(ctx, field)
 			case "createdBy":
-				return ec.fieldContext_Portfolio_createdBy(ctx, field)
+				return ec.fieldContext_Experience_createdBy(ctx, field)
 			case "updatedAt":
-				return ec.fieldContext_Portfolio_updatedAt(ctx, field)
+				return ec.fieldContext_Experience_updatedAt(ctx, field)
 			case "updatedBy":
-				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
+				return ec.fieldContext_Experience_updatedBy(ctx, field)
 			case "isActive":
-				return ec.fieldContext_Portfolio_isActive(ctx, field)
+				return ec.fieldContext_Experience_isActive(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
 	}
 	defer func() {
@@ -2274,15 +2352,15 @@ func (ec *executionContext) fieldContext_PortfolioMutation_updatePortfolio(ctx c
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_PortfolioMutation_updatePortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_experience_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _PortfolioMutation_deletePortfolio(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioMutation) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PortfolioMutation_deletePortfolio(ctx, field)
+func (ec *executionContext) _Query_portfolios(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_portfolios(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2295,62 +2373,7 @@ func (ec *executionContext) _PortfolioMutation_deletePortfolio(ctx context.Conte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.DeletePortfolio, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_PortfolioMutation_deletePortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "PortfolioMutation",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_PortfolioMutation_deletePortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _PortfolioQuery_portfolios(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioQuery) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PortfolioQuery_portfolios(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Portfolios, nil
+		return ec.resolvers.Query().Portfolios(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2367,12 +2390,12 @@ func (ec *executionContext) _PortfolioQuery_portfolios(ctx context.Context, fiel
 	return ec.marshalNPortfolio2ᚕᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PortfolioQuery_portfolios(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_portfolios(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PortfolioQuery",
+		Object:     "Query",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2406,8 +2429,8 @@ func (ec *executionContext) fieldContext_PortfolioQuery_portfolios(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _PortfolioQuery_portfolio(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioQuery) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PortfolioQuery_portfolio(ctx, field)
+func (ec *executionContext) _Query_portfolio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_portfolio(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2420,7 +2443,7 @@ func (ec *executionContext) _PortfolioQuery_portfolio(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Portfolio, nil
+		return ec.resolvers.Query().Portfolio(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2434,12 +2457,12 @@ func (ec *executionContext) _PortfolioQuery_portfolio(ctx context.Context, field
 	return ec.marshalOPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolio(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PortfolioQuery_portfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_portfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PortfolioQuery",
+		Object:     "Query",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2477,7 +2500,7 @@ func (ec *executionContext) fieldContext_PortfolioQuery_portfolio(ctx context.Co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_PortfolioQuery_portfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_portfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4789,73 +4812,67 @@ func (ec *executionContext) _Experience(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var experienceMutationImplementors = []string{"ExperienceMutation"}
+var mutationImplementors = []string{"Mutation"}
 
-func (ec *executionContext) _ExperienceMutation(ctx context.Context, sel ast.SelectionSet, obj *model.ExperienceMutation) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, experienceMutationImplementors)
+func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Mutation",
+	})
 
 	out := graphql.NewFieldSet(fields)
 	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
+		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
+			Object: field.Name,
+			Field:  field,
+		})
+
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("ExperienceMutation")
+			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createExperience":
-			out.Values[i] = ec._ExperienceMutation_createExperience(ctx, field, obj)
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createExperience(ctx, field)
+			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
 		case "updateExperience":
-			out.Values[i] = ec._ExperienceMutation_updateExperience(ctx, field, obj)
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateExperience(ctx, field)
+			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
 		case "deleteExperience":
-			out.Values[i] = ec._ExperienceMutation_deleteExperience(ctx, field, obj)
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteExperience(ctx, field)
+			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var experienceQueryImplementors = []string{"ExperienceQuery"}
-
-func (ec *executionContext) _ExperienceQuery(ctx context.Context, sel ast.SelectionSet, obj *model.ExperienceQuery) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, experienceQueryImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ExperienceQuery")
-		case "experiences":
-			out.Values[i] = ec._ExperienceQuery_experiences(ctx, field, obj)
+		case "createPortfolio":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createPortfolio(ctx, field)
+			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "experience":
-			out.Values[i] = ec._ExperienceQuery_experience(ctx, field, obj)
+		case "updatePortfolio":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updatePortfolio(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deletePortfolio":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deletePortfolio(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4949,96 +4966,6 @@ func (ec *executionContext) _Portfolio(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
-var portfolioMutationImplementors = []string{"PortfolioMutation"}
-
-func (ec *executionContext) _PortfolioMutation(ctx context.Context, sel ast.SelectionSet, obj *model.PortfolioMutation) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, portfolioMutationImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("PortfolioMutation")
-		case "createPortfolio":
-			out.Values[i] = ec._PortfolioMutation_createPortfolio(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "updatePortfolio":
-			out.Values[i] = ec._PortfolioMutation_updatePortfolio(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "deletePortfolio":
-			out.Values[i] = ec._PortfolioMutation_deletePortfolio(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var portfolioQueryImplementors = []string{"PortfolioQuery"}
-
-func (ec *executionContext) _PortfolioQuery(ctx context.Context, sel ast.SelectionSet, obj *model.PortfolioQuery) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, portfolioQueryImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("PortfolioQuery")
-		case "portfolios":
-			out.Values[i] = ec._PortfolioQuery_portfolios(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "portfolio":
-			out.Values[i] = ec._PortfolioQuery_portfolio(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -5058,6 +4985,88 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "experiences":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_experiences(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "experience":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_experience(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "portfolios":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_portfolios(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "portfolio":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_portfolio(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -5439,6 +5448,10 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNExperience2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperience(ctx context.Context, sel ast.SelectionSet, v model.Experience) graphql.Marshaler {
+	return ec._Experience(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNExperience2ᚕᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperienceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Experience) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -5511,6 +5524,10 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNPortfolio2sadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolio(ctx context.Context, sel ast.SelectionSet, v model.Portfolio) graphql.Marshaler {
+	return ec._Portfolio(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNPortfolio2ᚕᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Portfolio) graphql.Marshaler {

@@ -14,12 +14,12 @@ type Portfolio {
     isActive: Boolean!
 }
 
-type PortfolioQuery {
+extend type Query {
     portfolios: [Portfolio!]!
     portfolio(id: ID!): Portfolio
 }
 
-type PortfolioMutation {
+extend type Mutation {
     createPortfolio(input: PortfolioInput!): Portfolio!
     updatePortfolio(id: ID!, input: PortfolioInput!): Portfolio!
     deletePortfolio(id: ID!): Boolean!
