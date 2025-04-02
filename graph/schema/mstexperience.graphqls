@@ -1,0 +1,36 @@
+scalar Time
+
+
+type Experience {
+    id: ID!
+    jobTitle: String!
+    jobStartDate: Time!
+    jobFinishDate: Time!
+    jobDescription: String
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+extend type Query {
+    experiences: [Experience!]!
+    experience(id: ID!): Experience
+}
+
+extend type Mutation{
+    createExperience(input: ExperienceInput!): Experience!
+    updateExperience(id: ID!, input: ExperienceInput!): Experience!
+    deleteExperience(id: ID!): Boolean!
+}
+
+input ExperienceInput {
+    jobTitle: String!
+    jobStartDate: Time!
+    jobFinishDate: Time!
+    createdAt: Time!
+    createdBy: String
+    isActive: Boolean!
+    jobDescription: String
+}
