@@ -3,24 +3,26 @@
 package model
 
 type Experience struct {
-	ID            string  `json:"id"`
-	JobTitle      string  `json:"jobTitle"`
-	JobStartDate  Time    `json:"jobStartDate"`
-	JobFinishDate Time    `json:"jobFinishDate"`
-	CreatedAt     Time    `json:"createdAt"`
-	CreatedBy     *string `json:"createdBy,omitempty"`
-	UpdatedAt     *Time   `json:"updatedAt,omitempty"`
-	UpdatedBy     *string `json:"updatedBy,omitempty"`
-	IsActive      bool    `json:"isActive"`
+	ID             string  `json:"id"`
+	JobTitle       string  `json:"jobTitle"`
+	JobStartDate   Time    `json:"jobStartDate"`
+	JobFinishDate  Time    `json:"jobFinishDate"`
+	JobDescription *string `json:"jobDescription,omitempty"`
+	CreatedAt      Time    `json:"createdAt"`
+	CreatedBy      *string `json:"createdBy,omitempty"`
+	UpdatedAt      *Time   `json:"updatedAt,omitempty"`
+	UpdatedBy      *string `json:"updatedBy,omitempty"`
+	IsActive       bool    `json:"isActive"`
 }
 
 type ExperienceInput struct {
-	JobTitle      string  `json:"jobTitle"`
-	JobStartDate  Time    `json:"jobStartDate"`
-	JobFinishDate Time    `json:"jobFinishDate"`
-	CreatedAt     Time    `json:"createdAt"`
-	CreatedBy     *string `json:"createdBy,omitempty"`
-	IsActive      bool    `json:"isActive"`
+	JobTitle       string  `json:"jobTitle"`
+	JobStartDate   Time    `json:"jobStartDate"`
+	JobFinishDate  Time    `json:"jobFinishDate"`
+	CreatedAt      Time    `json:"createdAt"`
+	CreatedBy      *string `json:"createdBy,omitempty"`
+	IsActive       bool    `json:"isActive"`
+	JobDescription *string `json:"jobDescription,omitempty"`
 }
 
 type Mutation struct {

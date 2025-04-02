@@ -7,12 +7,26 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
+	"sadewa-portfolio-svc/config"
 	"sadewa-portfolio-svc/graph/model"
+	"time"
 )
 
-// CreatePortfolio is the resolver for the createPortfolio field.
+// Create a new portfolio
 func (r *mutationResolver) CreatePortfolio(ctx context.Context, input model.PortfolioInput) (*model.Portfolio, error) {
-	panic(fmt.Errorf("not implemented: CreatePortfolio - revised "))
+	var p model.Portfolio
+
+	err := config.DB.QueryRow(ctx, `INSERT INTO mst_portfolio (title, description, backend_stack, frontend_stack, database_stack, deployment_stack, created_at, created_by, is_active)
+	VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7, $8) RETURNING id, title, description, backend_stack, frontend_stack, database_stack, deployment_stack, created_at, created_by, is_active`,
+		input.Title, input.Description, input.BackendStack, input.FrontendStack, input.DatabaseStack, input.DeploymentStack, input.CreatedBy, input.IsActive).
+		Scan(&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack, &p.DeploymentStack, &p.CreatedAt, &p.CreatedBy, &p.IsActive)
+
+	if err != nil {
+		log.Println("Error inserting portfolio:", err)
+		return nil, err
+	}
+	return &p, nil
 }
 
 // UpdatePortfolio is the resolver for the updatePortfolio field.
@@ -25,12 +39,65 @@ func (r *mutationResolver) DeletePortfolio(ctx context.Context, id string) (bool
 	panic(fmt.Errorf("not implemented: DeletePortfolio - deletePortfolio"))
 }
 
-// Portfolios is the resolver for the portfolios field.
+// Fetch all portfolios
 func (r *queryResolver) Portfolios(ctx context.Context) ([]*model.Portfolio, error) {
-	panic(fmt.Errorf("not implemented: Portfolios - portfolios"))
+	rows, err := config.DB.Query(ctx, `
+		SELECT id, title, description, backend_stack, frontend_stack, database_stack, 
+		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active 
+		FROM mst_portfolio
+	`)
+	if err != nil {
+		log.Println("Error fetching portfolios:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var portfolios []*model.Portfolio
+	for rows.Next() {
+		var p model.Portfolio
+		var createdAt time.Time
+		var updatedAt *time.Time // Nullable timestamp
+
+		err := rows.Scan(
+			&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack,
+			&p.DeploymentStack, &createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
+		)
+		if err != nil {
+			log.Println("Error scanning portfolio:", err)
+			continue
+		}
+
+		// ✅ Convert time.Time to model.Time
+		p.CreatedAt = model.ToModelTime(createdAt)
+		if updatedAt != nil {
+			temp := model.ToModelTime(*updatedAt)
+			p.UpdatedAt = &temp
+		}
+
+		portfolios = append(portfolios, &p)
+	}
+
+	return portfolios, nil
 }
 
-// Portfolio is the resolver for the portfolio field.
+// Fetch a single portfolio
 func (r *queryResolver) Portfolio(ctx context.Context, id string) (*model.Portfolio, error) {
-	panic(fmt.Errorf("not implemented: Portfolio - portfolio"))
+	var p model.Portfolio
+	err := config.DB.QueryRow(ctx, `SELECT id, title, description, backend_stack, frontend_stack, database_stack, deployment_stack, created_at, created_by, updated_at, updated_by, is_active FROM mst_portfolio WHERE id=$1`, id).
+		Scan(&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack, &p.DeploymentStack, &p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive)
+
+	if err != nil {
+		log.Println("Error fetching portfolio:", err)
+		return nil, err
+	}
+	return &p, nil
 }
+
+// Mutation returns MutationResolver implementation.
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
+type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }

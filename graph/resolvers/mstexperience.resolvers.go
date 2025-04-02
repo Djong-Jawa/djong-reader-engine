@@ -7,8 +7,10 @@ package graph
 import (
 	"context"
 	"fmt"
-	"sadewa-portfolio-svc/graph/generated"
+	"log"
+	"sadewa-portfolio-svc/config"
 	"sadewa-portfolio-svc/graph/model"
+	"time"
 )
 
 // CreateExperience is the resolver for the createExperience field.
@@ -28,19 +30,68 @@ func (r *mutationResolver) DeleteExperience(ctx context.Context, id string) (boo
 
 // Experiences is the resolver for the experiences field.
 func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, error) {
-	panic(fmt.Errorf("not implemented: Experiences - experiences"))
+	rows, err := config.DB.Query(ctx, `
+		SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
+		FROM mst_experience
+	`)
+
+	if err != nil {
+		log.Println("Error fetching experiences: ", err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var experiences []*model.Experience
+	for rows.Next() {
+		var p model.Experience
+		var createdAt time.Time
+		var updatedAt *time.Time // Nullable timestamp
+		var jobStartDate *time.Time
+		var jobFinishDate *time.Time
+
+		fmt.Printf("start date : %v\n", &p.JobStartDate)
+
+		err := rows.Scan(
+			&p.ID, &p.JobTitle, &jobStartDate, &jobFinishDate, &p.JobDescription,
+			&createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
+		)
+
+		if err != nil {
+			log.Println("Error scanning experience:", err)
+			continue
+		}
+
+		// ✅ Convert time.Time to model.Time
+		p.CreatedAt = model.ToModelTime(createdAt)
+		if updatedAt != nil {
+			temp := model.ToModelTime(*updatedAt)
+			p.UpdatedAt = &temp
+		}
+
+		experiences = append(experiences, &p)
+
+	}
+
+	return experiences, nil
 }
 
 // Experience is the resolver for the experience field.
 func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Experience, error) {
-	panic(fmt.Errorf("not implemented: Experience - experience"))
+	var p model.Experience
+	err := config.DB.QueryRow(ctx, `
+		SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
+		FROM mst_experience
+		WHERE id=$1
+	`, id).Scan(
+		&p.ID, &p.JobTitle, &p.JobStartDate, &p.JobFinishDate, &p.JobDescription,
+			&p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive,
+	)
+
+	if err != nil {
+		log.Println("Error fetching experience: ", err)
+		return nil, err
+	}
+
+	return &p, nil 
 }
-
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

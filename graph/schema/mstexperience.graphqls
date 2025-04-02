@@ -1,10 +1,12 @@
 scalar Time
 
+
 type Experience {
     id: ID!
     jobTitle: String!
     jobStartDate: Time!
     jobFinishDate: Time!
+    jobDescription: String
     createdAt: Time!
     createdBy: String
     updatedAt: Time
@@ -30,4 +32,5 @@ input ExperienceInput {
     createdAt: Time!
     createdBy: String
     isActive: Boolean!
+    jobDescription: String
 }
