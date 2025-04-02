@@ -30,6 +30,9 @@ func (r *mutationResolver) DeleteExperience(ctx context.Context, id string) (boo
 
 // Experiences is the resolver for the experiences field.
 func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, error) {
+	log.Println("Experiences Resolver...")
+	log.Println("Request : ", r)
+
 	rows, err := config.DB.Query(ctx, `
 		SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
 		FROM mst_experience
@@ -45,12 +48,7 @@ func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, e
 	var experiences []*model.Experience
 	for rows.Next() {
 		var p model.Experience
-		var createdAt time.Time
-		var updatedAt *time.Time // Nullable timestamp
-		var jobStartDate *time.Time
-		var jobFinishDate *time.Time
-
-		fmt.Printf("start date : %v\n", &p.JobStartDate)
+		var jobStartDate, jobFinishDate, createdAt, updatedAt *time.Time
 
 		err := rows.Scan(
 			&p.ID, &p.JobTitle, &jobStartDate, &jobFinishDate, &p.JobDescription,
@@ -63,11 +61,25 @@ func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, e
 		}
 
 		// ✅ Convert time.Time to model.Time
-		p.CreatedAt = model.ToModelTime(createdAt)
+		if ts := model.TimeFromPtr(createdAt); ts != nil {
+			p.CreatedAt = *ts
+		}
+	
+		if ts := model.TimeFromPtr(jobStartDate); ts != nil {
+			p.JobStartDate = *ts
+		}
+
+		if ts := model.TimeFromPtr(jobFinishDate); ts != nil {
+			p.JobFinishDate = *ts
+		}
+
 		if updatedAt != nil {
 			temp := model.ToModelTime(*updatedAt)
 			p.UpdatedAt = &temp
 		}
+
+        // p.JobFinishDate = model.TimeFromPtr(jobFinishDate)
+        // p.UpdatedAt = model.TimeFromPtr(updatedAt)
 
 		experiences = append(experiences, &p)
 
