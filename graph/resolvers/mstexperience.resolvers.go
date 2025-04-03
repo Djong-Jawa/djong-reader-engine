@@ -11,6 +11,7 @@ import (
 	"sadewa-portfolio-svc/config"
 	"sadewa-portfolio-svc/graph/model"
 	"time"
+	"sadewa-portfolio-svc/graphqlutils"
 )
 
 // CreateExperience is the resolver for the createExperience field.
@@ -30,9 +31,9 @@ func (r *mutationResolver) DeleteExperience(ctx context.Context, id string) (boo
 
 // Experiences is the resolver for the experiences field.
 func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, error) {
-	log.Println("Experiences Resolver...")
-	log.Println("Request : ", r)
-
+	// print log 
+	graphqlutils.RequestLogger(ctx, "Query Experience")
+    
 	rows, err := config.DB.Query(ctx, `
 		SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
 		FROM mst_experience
@@ -85,25 +86,53 @@ func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, e
 
 	}
 
+
+	graphqlutils.ResponseLogger(experiences)
+
 	return experiences, nil
 }
 
 // Experience is the resolver for the experience field.
 func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Experience, error) {
+
+	// print log 
+	graphqlutils.RequestLogger(ctx, "Query Experience by id")
+	
 	var p model.Experience
+	var jobStartDate, jobFinishDate, createdAt, updatedAt *time.Time
 	err := config.DB.QueryRow(ctx, `
 		SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
 		FROM mst_experience
 		WHERE id=$1
 	`, id).Scan(
-		&p.ID, &p.JobTitle, &p.JobStartDate, &p.JobFinishDate, &p.JobDescription,
-			&p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive,
+		&p.ID, &p.JobTitle, &jobStartDate, &jobFinishDate, &p.JobDescription,
+			&createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
 	)
+
+	// ✅ Convert time.Time to model.Time
+	if ts := model.TimeFromPtr(createdAt); ts != nil {
+		p.CreatedAt = *ts
+	}
+
+	if ts := model.TimeFromPtr(jobStartDate); ts != nil {
+		p.JobStartDate = *ts
+	}
+
+	if ts := model.TimeFromPtr(jobFinishDate); ts != nil {
+		p.JobFinishDate = *ts
+	}
+
+	if updatedAt != nil {
+		temp := model.ToModelTime(*updatedAt)
+		p.UpdatedAt = &temp
+	}
 
 	if err != nil {
 		log.Println("Error fetching experience: ", err)
 		return nil, err
 	}
+
+	graphqlutils.ResponseLogger(p)
 
 	return &p, nil 
 }
