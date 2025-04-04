@@ -1,0 +1,36 @@
+type CompanyConnection {
+    edges: [CompanyEdge!]
+    pageInfo: PageInfo
+}
+
+type CompanyEdge {
+    cursor: String!
+    node: Company!
+}
+
+type Company {
+    id: ID!
+    companyName: String!
+    companyAddress: String
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+
+extend type Query {
+    company(id: ID!): Company
+    companys(first: Int, after: String): CompanyConnection!
+}
+
+type CompanyInput {
+    companyName: String!
+    companyAddress: String
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}

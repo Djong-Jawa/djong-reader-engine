@@ -16,7 +16,7 @@ import (
 // Education is the resolver for the Education field.
 func (r *queryResolver) Education(ctx context.Context, id string) (*model.Education, error) {
 	// print log
-	
+
 	graphqlutils.RequestLogger(ctx, "Query Education by id")
 
 	var edc model.Education
@@ -48,7 +48,6 @@ func (r *queryResolver) Education(ctx context.Context, id string) (*model.Educat
 
 // EducationsCursor is the resolver for the EducationsCursor field.
 func (r *queryResolver) Educations(ctx context.Context, first *int32, after *string) (*model.EducationConnection, error) {
-	
 	graphqlutils.RequestLogger(ctx, "Query Education")
 
 	var limit int32
@@ -124,21 +123,3 @@ func (r *queryResolver) Educations(ctx context.Context, first *int32, after *str
 
 	return response, nil
 }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateEducation(ctx context.Context, input model.EducationInput) (*model.Education, error) {
-	panic(fmt.Errorf("not implemented: CreateEducation - createEducation"))
-}
-func (r *mutationResolver) UpdateEducation(ctx context.Context, id string, input model.EducationInput) (*model.Education, error) {
-	panic(fmt.Errorf("not implemented: UpdateEducation - updateEducation"))
-}
-func (r *mutationResolver) DeleteEducation(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteEducation - deleteEducation"))
-}
-*/

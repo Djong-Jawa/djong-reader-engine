@@ -111,7 +111,7 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 		Edges:    edges,
 		PageInfo: pageInfo,
 	}
-	
+
 	graphqlutils.ResponseLogger(response)
 
 	return response, nil

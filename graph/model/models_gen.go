@@ -6,6 +6,38 @@ import (
 	"time"
 )
 
+type Company struct {
+	ID             string               `json:"id"`
+	CompanyName    string               `json:"companyName"`
+	CompanyAddress *string              `json:"companyAddress,omitempty"`
+	CreatedAt      time.Time            `json:"createdAt"`
+	CreatedBy      *string              `json:"createdBy,omitempty"`
+	UpdatedAt      *time.Time           `json:"updatedAt,omitempty"`
+	UpdatedBy      *string              `json:"updatedBy,omitempty"`
+	IsActive       bool                 `json:"isActive"`
+	Portfolios     *PortfolioConnection `json:"portfolios,omitempty"`
+}
+
+type CompanyConnection struct {
+	Edges    []*CompanyEdge `json:"edges,omitempty"`
+	PageInfo *PageInfo      `json:"pageInfo,omitempty"`
+}
+
+type CompanyEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *Company `json:"node"`
+}
+
+type CompanyInput struct {
+	CompanyName    string     `json:"companyName"`
+	CompanyAddress *string    `json:"companyAddress,omitempty"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	CreatedBy      *string    `json:"createdBy,omitempty"`
+	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy      *string    `json:"updatedBy,omitempty"`
+	IsActive       bool       `json:"isActive"`
+}
+
 type Education struct {
 	ID                 string     `json:"id"`
 	FieldOfStudy       string     `json:"fieldOfStudy"`
