@@ -16,6 +16,7 @@ import (
 // Education is the resolver for the Education field.
 func (r *queryResolver) Education(ctx context.Context, id string) (*model.Education, error) {
 	// print log
+	
 	graphqlutils.RequestLogger(ctx, "Query Education by id")
 
 	var edc model.Education
@@ -47,6 +48,9 @@ func (r *queryResolver) Education(ctx context.Context, id string) (*model.Educat
 
 // EducationsCursor is the resolver for the EducationsCursor field.
 func (r *queryResolver) Educations(ctx context.Context, first *int32, after *string) (*model.EducationConnection, error) {
+	
+	graphqlutils.RequestLogger(ctx, "Query Education")
+
 	var limit int32
 	if first != nil {
 		limit = *first
@@ -111,11 +115,14 @@ func (r *queryResolver) Educations(ctx context.Context, first *int32, after *str
 			Node:   edc,
 		}
 	}
-
-	return &model.EducationConnection{
+	var response = &model.EducationConnection{
 		Edges:    edges,
 		PageInfo: pageInfo,
-	}, nil
+	}
+
+	graphqlutils.ResponseLogger(response)
+
+	return response, nil
 }
 
 // !!! WARNING !!!
