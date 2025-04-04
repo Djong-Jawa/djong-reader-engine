@@ -10,8 +10,8 @@ import (
 	"log"
 	"sadewa-portfolio-svc/config"
 	"sadewa-portfolio-svc/graph/model"
-	"time"
 	"sadewa-portfolio-svc/graphqlutils"
+	"time"
 )
 
 // CreateExperience is the resolver for the createExperience field.
@@ -29,75 +29,11 @@ func (r *mutationResolver) DeleteExperience(ctx context.Context, id string) (boo
 	panic(fmt.Errorf("not implemented: DeleteExperience - deleteExperience"))
 }
 
-// Experiences is the resolver for the experiences field.
-func (r *queryResolver) Experiences(ctx context.Context) ([]*model.Experience, error) {
-	// print log 
-	graphqlutils.RequestLogger(ctx, "Query Experience")
-    
-	rows, err := config.DB.Query(ctx, `
-		SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
-		FROM mst_experience
-	`)
-
-	if err != nil {
-		log.Println("Error fetching experiences: ", err)
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	var experiences []*model.Experience
-	for rows.Next() {
-		var p model.Experience
-		var jobStartDate, jobFinishDate, createdAt, updatedAt *time.Time
-
-		err := rows.Scan(
-			&p.ID, &p.JobTitle, &jobStartDate, &jobFinishDate, &p.JobDescription,
-			&createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
-		)
-
-		if err != nil {
-			log.Println("Error scanning experience:", err)
-			continue
-		}
-
-		// ✅ Convert time.Time to model.Time
-		if ts := model.TimeFromPtr(createdAt); ts != nil {
-			p.CreatedAt = *ts
-		}
-	
-		if ts := model.TimeFromPtr(jobStartDate); ts != nil {
-			p.JobStartDate = *ts
-		}
-
-		if ts := model.TimeFromPtr(jobFinishDate); ts != nil {
-			p.JobFinishDate = *ts
-		}
-
-		if updatedAt != nil {
-			temp := model.ToModelTime(*updatedAt)
-			p.UpdatedAt = &temp
-		}
-
-        // p.JobFinishDate = model.TimeFromPtr(jobFinishDate)
-        // p.UpdatedAt = model.TimeFromPtr(updatedAt)
-
-		experiences = append(experiences, &p)
-
-	}
-
-
-	graphqlutils.ResponseLogger(experiences)
-
-	return experiences, nil
-}
-
 // Experience is the resolver for the experience field.
 func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Experience, error) {
-
-	// print log 
+	// print log
 	graphqlutils.RequestLogger(ctx, "Query Experience by id")
-	
+
 	var p model.Experience
 	var jobStartDate, jobFinishDate, createdAt, updatedAt *time.Time
 	err := config.DB.QueryRow(ctx, `
@@ -106,25 +42,20 @@ func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Exper
 		WHERE id=$1
 	`, id).Scan(
 		&p.ID, &p.JobTitle, &jobStartDate, &jobFinishDate, &p.JobDescription,
-			&createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
+		&createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
 	)
 
 	// ✅ Convert time.Time to model.Time
 	if ts := model.TimeFromPtr(createdAt); ts != nil {
-		p.CreatedAt = *ts
+		p.CreatedAt = time.Time(*ts)
 	}
 
 	if ts := model.TimeFromPtr(jobStartDate); ts != nil {
-		p.JobStartDate = *ts
+		p.JobStartDate = time.Time(*ts)
 	}
 
 	if ts := model.TimeFromPtr(jobFinishDate); ts != nil {
-		p.JobFinishDate = *ts
-	}
-
-	if updatedAt != nil {
-		temp := model.ToModelTime(*updatedAt)
-		p.UpdatedAt = &temp
+		p.JobFinishDate = time.Time(*ts)
 	}
 
 	if err != nil {
@@ -134,5 +65,87 @@ func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Exper
 
 	graphqlutils.ResponseLogger(p)
 
-	return &p, nil 
+	return &p, nil
+}
+
+// ExperiencesCursor is the resolver for the experiencesCursor field.
+func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *string) (*model.ExperienceConnection, error) {
+	var limit int32
+	if first != nil {
+		limit = *first
+	} else {
+		limit = 10 // default limit
+	}
+
+	var cursor string
+	if after != nil {
+		cursor = *after
+	} else {
+		cursor = ""
+	}
+
+	rows, err := config.DB.Query(ctx, `
+        SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
+        FROM mst_experience
+        WHERE id > $1
+        ORDER BY id ASC
+        LIMIT $2
+    `, cursor, limit)
+	if err != nil {
+		log.Println("Error fetching experiences: ", err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var experiences []*model.Experience
+	var lastCursor string
+	for rows.Next() {
+		var exp model.Experience
+		var jobStartDate, jobFinishDate, createdAt *time.Time
+
+		if err := rows.Scan(
+			&exp.ID, &exp.JobTitle, &jobStartDate, &jobFinishDate, &exp.JobDescription,
+			&exp.CreatedAt, &exp.CreatedBy, &exp.UpdatedAt, &exp.UpdatedBy, &exp.IsActive,
+		); err != nil {
+			log.Println("Error scanning experience:", err)
+			continue
+		}
+
+		// ✅ Convert time.Time to model.Time
+		if ts := model.TimeFromPtr(createdAt); ts != nil {
+			exp.CreatedAt = time.Time(*ts)
+		}
+
+		if ts := model.TimeFromPtr(jobStartDate); ts != nil {
+			exp.JobStartDate = time.Time(*ts)
+		}
+
+		if ts := model.TimeFromPtr(jobFinishDate); ts != nil {
+			exp.JobFinishDate = time.Time(*ts)
+		}
+
+		// p.JobFinishDate = model.TimeFromPtr(jobFinishDate)
+		// p.UpdatedAt = model.TimeFromPtr(updatedAt)
+		experiences = append(experiences, &exp)
+		lastCursor = exp.ID
+	}
+
+	pageInfo := &model.PageInfo{
+		EndCursor:   &lastCursor,
+		HasNextPage: len(experiences) == int(limit),
+	}
+
+	edges := make([]*model.ExperienceEdge, len(experiences))
+	for i, exp := range experiences {
+		edges[i] = &model.ExperienceEdge{
+			Cursor: exp.ID,
+			Node:   exp,
+		}
+	}
+
+	return &model.ExperienceConnection{
+		Edges:    edges,
+		PageInfo: pageInfo,
+	}, nil
 }

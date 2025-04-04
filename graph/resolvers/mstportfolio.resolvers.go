@@ -40,12 +40,29 @@ func (r *mutationResolver) DeletePortfolio(ctx context.Context, id string) (bool
 }
 
 // Fetch all portfolios
-func (r *queryResolver) Portfolios(ctx context.Context) ([]*model.Portfolio, error) {
+func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *string) (*model.PortfolioConnection, error) {
+	var limit int32
+	if first != nil {
+		limit = *first
+	} else {
+		limit = 10 // default limit
+	}
+
+	var cursor string
+	if after != nil {
+		cursor = *after
+	} else {
+		cursor = ""
+	}
+
 	rows, err := config.DB.Query(ctx, `
 		SELECT id, title, description, backend_stack, frontend_stack, database_stack, 
 		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active 
 		FROM mst_portfolio
-	`)
+		WHERE id > $1
+        ORDER BY id ASC
+        LIMIT $2
+	`, cursor, limit)
 	if err != nil {
 		log.Println("Error fetching portfolios:", err)
 		return nil, err
@@ -53,10 +70,10 @@ func (r *queryResolver) Portfolios(ctx context.Context) ([]*model.Portfolio, err
 	defer rows.Close()
 
 	var portfolios []*model.Portfolio
+	var lastCursor string
 	for rows.Next() {
 		var p model.Portfolio
-		var createdAt time.Time
-		var updatedAt *time.Time // Nullable timestamp
+		var createdAt, updatedAt *time.Time
 
 		err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack,
@@ -68,16 +85,31 @@ func (r *queryResolver) Portfolios(ctx context.Context) ([]*model.Portfolio, err
 		}
 
 		// ✅ Convert time.Time to model.Time
-		p.CreatedAt = model.ToModelTime(createdAt)
-		if updatedAt != nil {
-			temp := model.ToModelTime(*updatedAt)
-			p.UpdatedAt = &temp
+		if ts := model.TimeFromPtr(createdAt); ts != nil {
+			p.CreatedAt = time.Time(*ts)
 		}
 
 		portfolios = append(portfolios, &p)
+		lastCursor = p.ID
 	}
 
-	return portfolios, nil
+	pageInfo := &model.PageInfo{
+		EndCursor:   &lastCursor,
+		HasNextPage: len(portfolios) == int(limit),
+	}
+
+	edges := make([]*model.PortfolioEdge, len(portfolios))
+	for i, p := range portfolios {
+		edges[i] = &model.PortfolioEdge{
+			Cursor: p.ID,
+			Node:   p,
+		}
+	}
+
+	return &model.PortfolioConnection{
+		Edges:    edges,
+		PageInfo: pageInfo,
+	}, nil
 }
 
 // Fetch a single portfolio

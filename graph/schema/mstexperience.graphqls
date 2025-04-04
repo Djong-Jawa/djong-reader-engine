@@ -1,5 +1,20 @@
 scalar Time
 
+type ExperienceConnection {
+    edges: [ExperienceEdge!]!
+    pageInfo: PageInfo
+}
+
+type ExperienceEdge {
+    cursor: String!
+    node: Experience!
+}
+
+type PageInfo {
+    endCursor: String
+    hasNextPage: Boolean!
+}
+
 
 type Experience {
     id: ID!
@@ -15,8 +30,8 @@ type Experience {
 }
 
 extend type Query {
-    experiences: [Experience!]!
     experience(id: ID!): Experience
+    experiences(first: Int, after: String): ExperienceConnection!
 }
 
 extend type Mutation{

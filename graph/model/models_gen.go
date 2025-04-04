@@ -2,45 +2,121 @@
 
 package model
 
+import (
+	"time"
+)
+
+type Education struct {
+	ID                 string     `json:"id"`
+	FieldOfStudy       string     `json:"fieldOfStudy"`
+	School             string     `json:"school"`
+	Degree             string     `json:"degree"`
+	StartDate          time.Time  `json:"startDate"`
+	EndDate            *time.Time `json:"endDate,omitempty"`
+	Grade              *string    `json:"grade,omitempty"`
+	Description        *string    `json:"description,omitempty"`
+	ActivitiesSocietes *string    `json:"activitiesSocietes,omitempty"`
+	Skills             *string    `json:"skills,omitempty"`
+	Media              *string    `json:"media,omitempty"`
+	CreatedAt          time.Time  `json:"createdAt"`
+	CreatedBy          *string    `json:"createdBy,omitempty"`
+	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy          *string    `json:"updatedBy,omitempty"`
+	IsActive           bool       `json:"isActive"`
+}
+
+type EducationConnection struct {
+	Edges    []*EducationEdge `json:"edges,omitempty"`
+	PageInfo *PageInfo        `json:"pageInfo,omitempty"`
+}
+
+type EducationEdge struct {
+	Cursor string     `json:"cursor"`
+	Node   *Education `json:"node"`
+}
+
+type EducationInput struct {
+	FieldOfStudy       string     `json:"fieldOfStudy"`
+	School             string     `json:"school"`
+	Degree             string     `json:"degree"`
+	StartDate          time.Time  `json:"startDate"`
+	EndDate            *time.Time `json:"endDate,omitempty"`
+	Grade              *string    `json:"grade,omitempty"`
+	Description        *string    `json:"description,omitempty"`
+	ActivitiesSocietes *string    `json:"activitiesSocietes,omitempty"`
+	Skills             *string    `json:"skills,omitempty"`
+	Media              *string    `json:"media,omitempty"`
+	CreatedAt          time.Time  `json:"createdAt"`
+	CreatedBy          *string    `json:"createdBy,omitempty"`
+	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy          *string    `json:"updatedBy,omitempty"`
+	IsActive           bool       `json:"isActive"`
+}
+
 type Experience struct {
-	ID             string  `json:"id"`
-	JobTitle       string  `json:"jobTitle"`
-	JobStartDate   Time    `json:"jobStartDate"`
-	JobFinishDate  Time    `json:"jobFinishDate"`
-	JobDescription *string `json:"jobDescription,omitempty"`
-	CreatedAt      Time    `json:"createdAt"`
-	CreatedBy      *string `json:"createdBy,omitempty"`
-	UpdatedAt      *Time   `json:"updatedAt,omitempty"`
-	UpdatedBy      *string `json:"updatedBy,omitempty"`
-	IsActive       bool    `json:"isActive"`
+	ID             string     `json:"id"`
+	JobTitle       string     `json:"jobTitle"`
+	JobStartDate   time.Time  `json:"jobStartDate"`
+	JobFinishDate  time.Time  `json:"jobFinishDate"`
+	JobDescription *string    `json:"jobDescription,omitempty"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	CreatedBy      *string    `json:"createdBy,omitempty"`
+	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy      *string    `json:"updatedBy,omitempty"`
+	IsActive       bool       `json:"isActive"`
+}
+
+type ExperienceConnection struct {
+	Edges    []*ExperienceEdge `json:"edges"`
+	PageInfo *PageInfo         `json:"pageInfo,omitempty"`
+}
+
+type ExperienceEdge struct {
+	Cursor string      `json:"cursor"`
+	Node   *Experience `json:"node"`
 }
 
 type ExperienceInput struct {
-	JobTitle       string  `json:"jobTitle"`
-	JobStartDate   Time    `json:"jobStartDate"`
-	JobFinishDate  Time    `json:"jobFinishDate"`
-	CreatedAt      Time    `json:"createdAt"`
-	CreatedBy      *string `json:"createdBy,omitempty"`
-	IsActive       bool    `json:"isActive"`
-	JobDescription *string `json:"jobDescription,omitempty"`
+	JobTitle       string    `json:"jobTitle"`
+	JobStartDate   time.Time `json:"jobStartDate"`
+	JobFinishDate  time.Time `json:"jobFinishDate"`
+	CreatedAt      time.Time `json:"createdAt"`
+	CreatedBy      *string   `json:"createdBy,omitempty"`
+	IsActive       bool      `json:"isActive"`
+	JobDescription *string   `json:"jobDescription,omitempty"`
 }
 
 type Mutation struct {
 }
 
+type PageInfo struct {
+	EndCursor   *string `json:"endCursor,omitempty"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type Portfolio struct {
-	ID              string  `json:"id"`
-	Title           string  `json:"title"`
-	Description     *string `json:"description,omitempty"`
-	BackendStack    *string `json:"backendStack,omitempty"`
-	FrontendStack   *string `json:"frontendStack,omitempty"`
-	DatabaseStack   *string `json:"databaseStack,omitempty"`
-	DeploymentStack *string `json:"deploymentStack,omitempty"`
-	CreatedAt       Time    `json:"createdAt"`
-	CreatedBy       *string `json:"createdBy,omitempty"`
-	UpdatedAt       *Time   `json:"updatedAt,omitempty"`
-	UpdatedBy       *string `json:"updatedBy,omitempty"`
-	IsActive        bool    `json:"isActive"`
+	ID              string     `json:"id"`
+	Title           string     `json:"title"`
+	Description     *string    `json:"description,omitempty"`
+	BackendStack    *string    `json:"backendStack,omitempty"`
+	FrontendStack   *string    `json:"frontendStack,omitempty"`
+	DatabaseStack   *string    `json:"databaseStack,omitempty"`
+	DeploymentStack *string    `json:"deploymentStack,omitempty"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	CreatedBy       *string    `json:"createdBy,omitempty"`
+	UpdatedAt       *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy       *string    `json:"updatedBy,omitempty"`
+	IsActive        bool       `json:"isActive"`
+}
+
+type PortfolioConnection struct {
+	Edges    []*PortfolioEdge `json:"edges"`
+	PageInfo *PageInfo        `json:"pageInfo,omitempty"`
+}
+
+type PortfolioEdge struct {
+	Cursor string     `json:"cursor"`
+	Node   *Portfolio `json:"node"`
 }
 
 type PortfolioInput struct {

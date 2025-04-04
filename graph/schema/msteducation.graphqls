@@ -1,0 +1,52 @@
+type EducationConnection {
+    edges: [EducationEdge!]
+    pageInfo: PageInfo
+}
+
+type EducationEdge {
+    cursor: String!
+    node: Education!
+}
+
+type Education {
+    id: ID!
+    fieldOfStudy: String!
+    school: String!
+    degree: String!
+    startDate: Time!
+    endDate: Time
+    grade: String 
+    description: String 
+    activitiesSocietes: String
+    skills: String
+    media: String 
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+
+extend type Query {
+    education(id: ID!): Education
+    educations(first: Int, after: String): EducationConnection!
+}
+
+type EducationInput {
+    fieldOfStudy: String!
+    school: String!
+    degree: String!
+    startDate: Time!
+    endDate: Time
+    grade: String 
+    description: String 
+    activitiesSocietes: String
+    skills: String
+    media: String 
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
