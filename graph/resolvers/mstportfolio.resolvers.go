@@ -10,6 +10,7 @@ import (
 	"log"
 	"sadewa-portfolio-svc/config"
 	"sadewa-portfolio-svc/graph/model"
+	"sadewa-portfolio-svc/graphqlutils"
 	"time"
 )
 
@@ -106,10 +107,14 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 		}
 	}
 
-	return &model.PortfolioConnection{
+	var response = &model.PortfolioConnection{
 		Edges:    edges,
 		PageInfo: pageInfo,
-	}, nil
+	}
+	
+	graphqlutils.ResponseLogger(response)
+
+	return response, nil
 }
 
 // Fetch a single portfolio

@@ -70,6 +70,8 @@ func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Exper
 
 // ExperiencesCursor is the resolver for the experiencesCursor field.
 func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *string) (*model.ExperienceConnection, error) {
+	graphqlutils.RequestLogger(ctx, "Query Experience")
+
 	var limit int32
 	if first != nil {
 		limit = *first
@@ -143,9 +145,12 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 			Node:   exp,
 		}
 	}
-
-	return &model.ExperienceConnection{
+	var response = &model.ExperienceConnection{
 		Edges:    edges,
 		PageInfo: pageInfo,
-	}, nil
+	}
+
+	graphqlutils.ResponseLogger(response)
+
+	return response, nil
 }
