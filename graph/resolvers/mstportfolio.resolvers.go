@@ -58,7 +58,7 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 
 	rows, err := config.DB.Query(ctx, `
 		SELECT id, title, description, backend_stack, frontend_stack, database_stack, 
-		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active 
+		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active, project_year
 		FROM mst_portfolio
 		WHERE id > $1
         ORDER BY id ASC
@@ -78,7 +78,7 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 
 		err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack,
-			&p.DeploymentStack, &createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive,
+			&p.DeploymentStack, &createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive, &p.ProjectYear,
 		)
 		if err != nil {
 			log.Println("Error scanning portfolio:", err)
@@ -120,8 +120,12 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 // Fetch a single portfolio
 func (r *queryResolver) Portfolio(ctx context.Context, id string) (*model.Portfolio, error) {
 	var p model.Portfolio
-	err := config.DB.QueryRow(ctx, `SELECT id, title, description, backend_stack, frontend_stack, database_stack, deployment_stack, created_at, created_by, updated_at, updated_by, is_active FROM mst_portfolio WHERE id=$1`, id).
-		Scan(&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack, &p.DeploymentStack, &p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive)
+	err := config.DB.QueryRow(ctx, `SELECT id, title, description, backend_stack, 
+		frontend_stack, database_stack, deployment_stack, created_at, created_by, 
+		updated_at, updated_by, is_active, project_year 
+		FROM mst_portfolio WHERE id=$1`, id).
+		Scan(&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack, &p.DeploymentStack, 
+			&p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive, &p.ProjectYear,)
 
 	if err != nil {
 		log.Println("Error fetching portfolio:", err)

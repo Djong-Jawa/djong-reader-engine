@@ -3,19 +3,21 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
 type Company struct {
-	ID             string               `json:"id"`
-	CompanyName    string               `json:"companyName"`
-	CompanyAddress *string              `json:"companyAddress,omitempty"`
-	CreatedAt      time.Time            `json:"createdAt"`
-	CreatedBy      *string              `json:"createdBy,omitempty"`
-	UpdatedAt      *time.Time           `json:"updatedAt,omitempty"`
-	UpdatedBy      *string              `json:"updatedBy,omitempty"`
-	IsActive       bool                 `json:"isActive"`
-	Portfolios     *PortfolioConnection `json:"portfolios,omitempty"`
+	ID             string     `json:"id"`
+	CompanyName    string     `json:"companyName"`
+	CompanyAddress *string    `json:"companyAddress,omitempty"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	CreatedBy      *string    `json:"createdBy,omitempty"`
+	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy      *string    `json:"updatedBy,omitempty"`
+	IsActive       bool       `json:"isActive"`
 }
 
 type CompanyConnection struct {
@@ -139,6 +141,7 @@ type Portfolio struct {
 	UpdatedAt       *time.Time `json:"updatedAt,omitempty"`
 	UpdatedBy       *string    `json:"updatedBy,omitempty"`
 	IsActive        bool       `json:"isActive"`
+	ProjectYear     *int32     `json:"projectYear,omitempty"`
 }
 
 type PortfolioConnection struct {
@@ -161,7 +164,49 @@ type PortfolioInput struct {
 	CreatedBy       *string `json:"createdBy,omitempty"`
 	UpdatedBy       *string `json:"updatedBy,omitempty"`
 	IsActive        bool    `json:"isActive"`
+	ProjectYear     *int32  `json:"projectYear,omitempty"`
 }
 
 type Query struct {
+}
+
+type SortOrder string
+
+const (
+	SortOrderAsc  SortOrder = "ASC"
+	SortOrderDesc SortOrder = "DESC"
+)
+
+var AllSortOrder = []SortOrder{
+	SortOrderAsc,
+	SortOrderDesc,
+}
+
+func (e SortOrder) IsValid() bool {
+	switch e {
+	case SortOrderAsc, SortOrderDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrder) String() string {
+	return string(e)
+}
+
+func (e *SortOrder) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrder(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrder", str)
+	}
+	return nil
+}
+
+func (e SortOrder) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

@@ -54,7 +54,6 @@ type ComplexityRoot struct {
 		CreatedBy      func(childComplexity int) int
 		ID             func(childComplexity int) int
 		IsActive       func(childComplexity int) int
-		Portfolios     func(childComplexity int, first *int32, after *string) int
 		UpdatedAt      func(childComplexity int) int
 		UpdatedBy      func(childComplexity int) int
 	}
@@ -173,6 +172,7 @@ type ComplexityRoot struct {
 		FrontendStack   func(childComplexity int) int
 		ID              func(childComplexity int) int
 		IsActive        func(childComplexity int) int
+		ProjectYear     func(childComplexity int) int
 		Title           func(childComplexity int) int
 		UpdatedAt       func(childComplexity int) int
 		UpdatedBy       func(childComplexity int) int
@@ -279,18 +279,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Company.IsActive(childComplexity), true
-
-	case "Company.portfolios":
-		if e.complexity.Company.Portfolios == nil {
-			break
-		}
-
-		args, err := ec.field_Company_portfolios_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Company.Portfolios(childComplexity, args["first"].(*int32), args["after"].(*string)), true
 
 	case "Company.updatedAt":
 		if e.complexity.Company.UpdatedAt == nil {
@@ -875,6 +863,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Portfolio.IsActive(childComplexity), true
 
+	case "Portfolio.projectYear":
+		if e.complexity.Portfolio.ProjectYear == nil {
+			break
+		}
+
+		return e.complexity.Portfolio.ProjectYear(childComplexity), true
+
 	case "Portfolio.title":
 		if e.complexity.Portfolio.Title == nil {
 			break
@@ -1146,7 +1141,6 @@ type Company {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
-    portfolios(first: Int, after: String): PortfolioConnection
 }
 
 
@@ -1278,6 +1272,10 @@ type PortfolioEdge {
     node: Portfolio!
 }
 
+enum SortOrder {
+  ASC
+  DESC
+}
 
 type Portfolio {
     id: ID!
@@ -1292,6 +1290,7 @@ type Portfolio {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    projectYear: Int
 }
 
 type Query {
@@ -1315,6 +1314,7 @@ input PortfolioInput {
     createdBy: String
     updatedBy: String
     isActive: Boolean!
+    projectYear: Int
 }
 `, BuiltIn: false},
 }
@@ -1323,47 +1323,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
-
-func (ec *executionContext) field_Company_portfolios_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := ec.field_Company_portfolios_argsFirst(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["first"] = arg0
-	arg1, err := ec.field_Company_portfolios_argsAfter(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["after"] = arg1
-	return args, nil
-}
-func (ec *executionContext) field_Company_portfolios_argsFirst(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*int32, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-	if tmp, ok := rawArgs["first"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
-	}
-
-	var zeroVal *int32
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Company_portfolios_argsAfter(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-	if tmp, ok := rawArgs["after"]; ok {
-		return ec.unmarshalOString2ᚖstring(ctx, tmp)
-	}
-
-	var zeroVal *string
-	return zeroVal, nil
-}
 
 func (ec *executionContext) field_Mutation_createExperience_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
@@ -2258,64 +2217,6 @@ func (ec *executionContext) fieldContext_Company_isActive(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Company_portfolios(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Company_portfolios(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Portfolios, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.PortfolioConnection)
-	fc.Result = res
-	return ec.marshalOPortfolioConnection2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Company_portfolios(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_PortfolioConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_PortfolioConnection_pageInfo(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PortfolioConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Company_portfolios_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _CompanyConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.CompanyConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CompanyConnection_edges(ctx, field)
 	if err != nil {
@@ -2509,8 +2410,6 @@ func (ec *executionContext) fieldContext_CompanyEdge_node(_ context.Context, fie
 				return ec.fieldContext_Company_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Company_isActive(ctx, field)
-			case "portfolios":
-				return ec.fieldContext_Company_portfolios(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Company", field.Name)
 		},
@@ -5038,6 +4937,8 @@ func (ec *executionContext) fieldContext_Mutation_createPortfolio(ctx context.Co
 				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
+			case "projectYear":
+				return ec.fieldContext_Portfolio_projectYear(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -5119,6 +5020,8 @@ func (ec *executionContext) fieldContext_Mutation_updatePortfolio(ctx context.Co
 				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
+			case "projectYear":
+				return ec.fieldContext_Portfolio_projectYear(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -5990,6 +5893,47 @@ func (ec *executionContext) fieldContext_Portfolio_isActive(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Portfolio_projectYear(ctx context.Context, field graphql.CollectedField, obj *model.Portfolio) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Portfolio_projectYear(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectYear, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Portfolio_projectYear(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Portfolio",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PortfolioConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PortfolioConnection_edges(ctx, field)
 	if err != nil {
@@ -6194,6 +6138,8 @@ func (ec *executionContext) fieldContext_PortfolioEdge_node(_ context.Context, f
 				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
+			case "projectYear":
+				return ec.fieldContext_Portfolio_projectYear(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -6322,6 +6268,8 @@ func (ec *executionContext) fieldContext_Query_portfolio(ctx context.Context, fi
 				return ec.fieldContext_Portfolio_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
+			case "projectYear":
+				return ec.fieldContext_Portfolio_projectYear(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -6392,8 +6340,6 @@ func (ec *executionContext) fieldContext_Query_company(ctx context.Context, fiel
 				return ec.fieldContext_Company_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Company_isActive(ctx, field)
-			case "portfolios":
-				return ec.fieldContext_Company_portfolios(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Company", field.Name)
 		},
@@ -8913,7 +8859,7 @@ func (ec *executionContext) unmarshalInputPortfolioInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "description", "backendStack", "frontendStack", "databaseStack", "deploymentStack", "createdBy", "updatedBy", "isActive"}
+	fieldsInOrder := [...]string{"title", "description", "backendStack", "frontendStack", "databaseStack", "deploymentStack", "createdBy", "updatedBy", "isActive", "projectYear"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8983,6 +8929,13 @@ func (ec *executionContext) unmarshalInputPortfolioInput(ctx context.Context, ob
 				return it, err
 			}
 			it.IsActive = data
+		case "projectYear":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectYear"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProjectYear = data
 		}
 	}
 
@@ -9036,8 +8989,6 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "portfolios":
-			out.Values[i] = ec._Company_portfolios(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9780,6 +9731,8 @@ func (ec *executionContext) _Portfolio(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "projectYear":
+			out.Values[i] = ec._Portfolio_projectYear(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -11161,13 +11114,6 @@ func (ec *executionContext) marshalOPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgrap
 		return graphql.Null
 	}
 	return ec._Portfolio(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOPortfolioConnection2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioConnection(ctx context.Context, sel ast.SelectionSet, v *model.PortfolioConnection) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._PortfolioConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

@@ -9,6 +9,10 @@ type PortfolioEdge {
     node: Portfolio!
 }
 
+enum SortOrder {
+  ASC
+  DESC
+}
 
 type Portfolio {
     id: ID!
@@ -23,6 +27,7 @@ type Portfolio {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    projectYear: Int
 }
 
 type Query {
@@ -46,4 +51,5 @@ input PortfolioInput {
     createdBy: String
     updatedBy: String
     isActive: Boolean!
+    projectYear: Int
 }
