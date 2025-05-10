@@ -9,11 +9,6 @@ type PortfolioEdge {
     node: Portfolio!
 }
 
-enum SortOrder {
-  ASC
-  DESC
-}
-
 type Portfolio {
     id: ID!
     title: String!
@@ -31,7 +26,7 @@ type Portfolio {
 }
 
 type Query {
-    portfolios(first: Int, after: String): PortfolioConnection!
+    portfolios(first: Int, after: String, orderBy: PortfolioOrderByInput): PortfolioConnection!
     portfolio(id: ID!): Portfolio
 }
 
@@ -40,6 +35,17 @@ type Mutation {
     updatePortfolio(id: ID!, input: PortfolioInput!): Portfolio!
     deletePortfolio(id: ID!): Boolean!
 }
+
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input PortfolioOrderByInput {
+    projectYear: SortOrder
+}
+
 
 input PortfolioInput {
     title: String!

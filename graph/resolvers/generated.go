@@ -196,7 +196,7 @@ type ComplexityRoot struct {
 		Experience  func(childComplexity int, id string) int
 		Experiences func(childComplexity int, first *int32, after *string) int
 		Portfolio   func(childComplexity int, id string) int
-		Portfolios  func(childComplexity int, first *int32, after *string) int
+		Portfolios  func(childComplexity int, first *int32, after *string, orderBy *model.PortfolioOrderByInput) int
 	}
 }
 
@@ -209,7 +209,7 @@ type MutationResolver interface {
 	DeleteExperience(ctx context.Context, id string) (bool, error)
 }
 type QueryResolver interface {
-	Portfolios(ctx context.Context, first *int32, after *string) (*model.PortfolioConnection, error)
+	Portfolios(ctx context.Context, first *int32, after *string, orderBy *model.PortfolioOrderByInput) (*model.PortfolioConnection, error)
 	Portfolio(ctx context.Context, id string) (*model.Portfolio, error)
 	Company(ctx context.Context, id string) (*model.Company, error)
 	Companys(ctx context.Context, first *int32, after *string) (*model.CompanyConnection, error)
@@ -1013,7 +1013,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Portfolios(childComplexity, args["first"].(*int32), args["after"].(*string)), true
+		return e.complexity.Query.Portfolios(childComplexity, args["first"].(*int32), args["after"].(*string), args["orderBy"].(*model.PortfolioOrderByInput)), true
 
 	}
 	return 0, false
@@ -1025,6 +1025,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputExperienceInput,
 		ec.unmarshalInputPortfolioInput,
+		ec.unmarshalInputPortfolioOrderByInput,
 	)
 	first := true
 
@@ -1272,11 +1273,6 @@ type PortfolioEdge {
     node: Portfolio!
 }
 
-enum SortOrder {
-  ASC
-  DESC
-}
-
 type Portfolio {
     id: ID!
     title: String!
@@ -1294,7 +1290,7 @@ type Portfolio {
 }
 
 type Query {
-    portfolios(first: Int, after: String): PortfolioConnection!
+    portfolios(first: Int, after: String, orderBy: PortfolioOrderByInput): PortfolioConnection!
     portfolio(id: ID!): Portfolio
 }
 
@@ -1303,6 +1299,17 @@ type Mutation {
     updatePortfolio(id: ID!, input: PortfolioInput!): Portfolio!
     deletePortfolio(id: ID!): Boolean!
 }
+
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input PortfolioOrderByInput {
+    projectYear: SortOrder
+}
+
 
 input PortfolioInput {
     title: String!
@@ -1749,6 +1756,11 @@ func (ec *executionContext) field_Query_portfolios_args(ctx context.Context, raw
 		return nil, err
 	}
 	args["after"] = arg1
+	arg2, err := ec.field_Query_portfolios_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
 	return args, nil
 }
 func (ec *executionContext) field_Query_portfolios_argsFirst(
@@ -1774,6 +1786,19 @@ func (ec *executionContext) field_Query_portfolios_argsAfter(
 	}
 
 	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_portfolios_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.PortfolioOrderByInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOPortfolioOrderByInput2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioOrderByInput(ctx, tmp)
+	}
+
+	var zeroVal *model.PortfolioOrderByInput
 	return zeroVal, nil
 }
 
@@ -6161,7 +6186,7 @@ func (ec *executionContext) _Query_portfolios(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Portfolios(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string))
+		return ec.resolvers.Query().Portfolios(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string), fc.Args["orderBy"].(*model.PortfolioOrderByInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8942,6 +8967,33 @@ func (ec *executionContext) unmarshalInputPortfolioInput(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPortfolioOrderByInput(ctx context.Context, obj any) (model.PortfolioOrderByInput, error) {
+	var it model.PortfolioOrderByInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"projectYear"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "projectYear":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectYear"))
+			data, err := ec.unmarshalOSortOrder2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ProjectYear = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -11114,6 +11166,30 @@ func (ec *executionContext) marshalOPortfolio2ᚖsadewaᚑportfolioᚑsvcᚋgrap
 		return graphql.Null
 	}
 	return ec._Portfolio(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOPortfolioOrderByInput2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐPortfolioOrderByInput(ctx context.Context, v any) (*model.PortfolioOrderByInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPortfolioOrderByInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOSortOrder2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrder(ctx context.Context, v any) (*model.SortOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.SortOrder)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSortOrder2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrder(ctx context.Context, sel ast.SelectionSet, v *model.SortOrder) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

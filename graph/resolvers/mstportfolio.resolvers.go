@@ -41,12 +41,25 @@ func (r *mutationResolver) DeletePortfolio(ctx context.Context, id string) (bool
 }
 
 // Fetch all portfolios
-func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *string) (*model.PortfolioConnection, error) {
+func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *string, orderBy *model.PortfolioOrderByInput) (*model.PortfolioConnection, error) {
 	var limit int32
 	if first != nil {
 		limit = *first
 	} else {
 		limit = 10 // default limit
+	}
+
+	// Initialize sorting parameters
+	sortField := "project_year"
+	sortDirection := "ASC"
+
+	// Update sorting parameters based on orderBy input
+	if orderBy != nil {
+		if orderBy.ProjectYear != nil {
+			sortField = "project_year"
+			sortDirection = string(*orderBy.ProjectYear)
+		}
+		// Add additional fields as needed
 	}
 
 	var cursor string
@@ -56,14 +69,18 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 		cursor = ""
 	}
 
-	rows, err := config.DB.Query(ctx, `
+	log.Println("sortField, sortDirection : $1, $2", sortField, sortDirection)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, description, backend_stack, frontend_stack, database_stack, 
 		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active, project_year
 		FROM mst_portfolio
 		WHERE id > $1
-        ORDER BY id ASC
+        ORDER BY %s %s
         LIMIT $2
-	`, cursor, limit)
+	`, sortField, sortDirection)
+
+	rows, err := config.DB.Query(ctx, query, cursor, limit)
 	if err != nil {
 		log.Println("Error fetching portfolios:", err)
 		return nil, err
@@ -124,8 +141,8 @@ func (r *queryResolver) Portfolio(ctx context.Context, id string) (*model.Portfo
 		frontend_stack, database_stack, deployment_stack, created_at, created_by, 
 		updated_at, updated_by, is_active, project_year 
 		FROM mst_portfolio WHERE id=$1`, id).
-		Scan(&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack, &p.DeploymentStack, 
-			&p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive, &p.ProjectYear,)
+		Scan(&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack, &p.DeploymentStack,
+			&p.CreatedAt, &p.CreatedBy, &p.UpdatedAt, &p.UpdatedBy, &p.IsActive, &p.ProjectYear)
 
 	if err != nil {
 		log.Println("Error fetching portfolio:", err)

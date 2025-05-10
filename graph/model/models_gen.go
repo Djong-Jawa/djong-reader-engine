@@ -167,6 +167,10 @@ type PortfolioInput struct {
 	ProjectYear     *int32  `json:"projectYear,omitempty"`
 }
 
+type PortfolioOrderByInput struct {
+	ProjectYear *SortOrder `json:"projectYear,omitempty"`
+}
+
 type Query struct {
 }
 
