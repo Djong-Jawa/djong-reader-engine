@@ -75,8 +75,8 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 		SELECT id, title, description, backend_stack, frontend_stack, database_stack, 
 		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active, project_year
 		FROM mst_portfolio
-		WHERE id > $1
-        ORDER BY %s %s
+		ORDER BY %s %s
+		OFFSET $1
         LIMIT $2
 	`, sortField, sortDirection)
 
