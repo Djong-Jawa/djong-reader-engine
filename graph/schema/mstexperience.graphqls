@@ -15,7 +15,6 @@ type PageInfo {
     hasNextPage: Boolean!
 }
 
-
 type Experience {
     id: ID!
     jobTitle: String!
@@ -31,7 +30,7 @@ type Experience {
 
 extend type Query {
     experience(id: ID!): Experience
-    experiences(first: Int, after: String): ExperienceConnection!
+    experiences(first: Int, after: String, orderBy: ExperienceOrderByInput): ExperienceConnection!
 }
 
 extend type Mutation{
@@ -39,6 +38,16 @@ extend type Mutation{
     updateExperience(id: ID!, input: ExperienceInput!): Experience!
     deleteExperience(id: ID!): Boolean!
 }
+
+enum SortOrderExperience {
+    ASC 
+    DESC 
+}
+
+input ExperienceOrderByInput {
+    jobFinishDate: SortOrderExperience
+}
+
 
 input ExperienceInput {
     jobTitle: String!

@@ -69,7 +69,7 @@ func (r *queryResolver) Experience(ctx context.Context, id string) (*model.Exper
 }
 
 // ExperiencesCursor is the resolver for the experiencesCursor field.
-func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *string) (*model.ExperienceConnection, error) {
+func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *string, orderBy *model.ExperienceOrderByInput) (*model.ExperienceConnection, error) {
 	graphqlutils.RequestLogger(ctx, "Query Experience")
 
 	var limit int32
@@ -79,20 +79,36 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 		limit = 10 // default limit
 	}
 
+	// Initialize sorting parameters
+	sortField := "job_finish_date"
+	sortDirection := "ASC"
+
+	// Update sorting parameters based on orderBy input
+	if orderBy != nil {
+		if orderBy.JobFinishDate != nil {
+			sortField = "job_finish_date"
+			sortDirection = string(*orderBy.JobFinishDate)
+		}
+		// Add additional fields as needed
+	}
+
 	var cursor string
 	if after != nil {
 		cursor = *after
 	} else {
 		cursor = ""
 	}
+	log.Println("sortField, sortDirection : $1, $2", sortField, sortDirection)
 
-	rows, err := config.DB.Query(ctx, `
+	query := fmt.Sprintf(`
         SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
         FROM mst_experience
-        WHERE id > $1
-        ORDER BY id ASC
+        ORDER BY %s %s
+		OFFSET $1
         LIMIT $2
-    `, cursor, limit)
+    `, sortField, sortDirection)
+
+	rows, err := config.DB.Query(ctx, query, cursor, limit)
 	if err != nil {
 		log.Println("Error fetching experiences: ", err)
 		return nil, err

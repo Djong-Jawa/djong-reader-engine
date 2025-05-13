@@ -120,6 +120,10 @@ type ExperienceInput struct {
 	JobDescription *string   `json:"jobDescription,omitempty"`
 }
 
+type ExperienceOrderByInput struct {
+	JobFinishDate *SortOrderExperience `json:"jobFinishDate,omitempty"`
+}
+
 type Mutation struct {
 }
 
@@ -212,5 +216,46 @@ func (e *SortOrder) UnmarshalGQL(v any) error {
 }
 
 func (e SortOrder) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SortOrderExperience string
+
+const (
+	SortOrderExperienceAsc  SortOrderExperience = "ASC"
+	SortOrderExperienceDesc SortOrderExperience = "DESC"
+)
+
+var AllSortOrderExperience = []SortOrderExperience{
+	SortOrderExperienceAsc,
+	SortOrderExperienceDesc,
+}
+
+func (e SortOrderExperience) IsValid() bool {
+	switch e {
+	case SortOrderExperienceAsc, SortOrderExperienceDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderExperience) String() string {
+	return string(e)
+}
+
+func (e *SortOrderExperience) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderExperience(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderExperience", str)
+	}
+	return nil
+}
+
+func (e SortOrderExperience) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

@@ -194,7 +194,7 @@ type ComplexityRoot struct {
 		Education   func(childComplexity int, id string) int
 		Educations  func(childComplexity int, first *int32, after *string) int
 		Experience  func(childComplexity int, id string) int
-		Experiences func(childComplexity int, first *int32, after *string) int
+		Experiences func(childComplexity int, first *int32, after *string, orderBy *model.ExperienceOrderByInput) int
 		Portfolio   func(childComplexity int, id string) int
 		Portfolios  func(childComplexity int, first *int32, after *string, orderBy *model.PortfolioOrderByInput) int
 	}
@@ -216,7 +216,7 @@ type QueryResolver interface {
 	Education(ctx context.Context, id string) (*model.Education, error)
 	Educations(ctx context.Context, first *int32, after *string) (*model.EducationConnection, error)
 	Experience(ctx context.Context, id string) (*model.Experience, error)
-	Experiences(ctx context.Context, first *int32, after *string) (*model.ExperienceConnection, error)
+	Experiences(ctx context.Context, first *int32, after *string, orderBy *model.ExperienceOrderByInput) (*model.ExperienceConnection, error)
 }
 
 type executableSchema struct {
@@ -989,7 +989,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Experiences(childComplexity, args["first"].(*int32), args["after"].(*string)), true
+		return e.complexity.Query.Experiences(childComplexity, args["first"].(*int32), args["after"].(*string), args["orderBy"].(*model.ExperienceOrderByInput)), true
 
 	case "Query.portfolio":
 		if e.complexity.Query.Portfolio == nil {
@@ -1024,6 +1024,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputExperienceInput,
+		ec.unmarshalInputExperienceOrderByInput,
 		ec.unmarshalInputPortfolioInput,
 		ec.unmarshalInputPortfolioOrderByInput,
 	)
@@ -1228,7 +1229,6 @@ type PageInfo {
     hasNextPage: Boolean!
 }
 
-
 type Experience {
     id: ID!
     jobTitle: String!
@@ -1244,7 +1244,7 @@ type Experience {
 
 extend type Query {
     experience(id: ID!): Experience
-    experiences(first: Int, after: String): ExperienceConnection!
+    experiences(first: Int, after: String, orderBy: ExperienceOrderByInput): ExperienceConnection!
 }
 
 extend type Mutation{
@@ -1252,6 +1252,16 @@ extend type Mutation{
     updateExperience(id: ID!, input: ExperienceInput!): Experience!
     deleteExperience(id: ID!): Boolean!
 }
+
+enum SortOrderExperience {
+    ASC 
+    DESC 
+}
+
+input ExperienceOrderByInput {
+    jobFinishDate: SortOrderExperience
+}
+
 
 input ExperienceInput {
     jobTitle: String!
@@ -1692,6 +1702,11 @@ func (ec *executionContext) field_Query_experiences_args(ctx context.Context, ra
 		return nil, err
 	}
 	args["after"] = arg1
+	arg2, err := ec.field_Query_experiences_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
 	return args, nil
 }
 func (ec *executionContext) field_Query_experiences_argsFirst(
@@ -1717,6 +1732,19 @@ func (ec *executionContext) field_Query_experiences_argsAfter(
 	}
 
 	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_experiences_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.ExperienceOrderByInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOExperienceOrderByInput2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperienceOrderByInput(ctx, tmp)
+	}
+
+	var zeroVal *model.ExperienceOrderByInput
 	return zeroVal, nil
 }
 
@@ -6679,7 +6707,7 @@ func (ec *executionContext) _Query_experiences(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Experiences(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string))
+		return ec.resolvers.Query().Experiences(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string), fc.Args["orderBy"].(*model.ExperienceOrderByInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8871,6 +8899,33 @@ func (ec *executionContext) unmarshalInputExperienceInput(ctx context.Context, o
 				return it, err
 			}
 			it.JobDescription = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputExperienceOrderByInput(ctx context.Context, obj any) (model.ExperienceOrderByInput, error) {
+	var it model.ExperienceOrderByInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"jobFinishDate"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "jobFinishDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("jobFinishDate"))
+			data, err := ec.unmarshalOSortOrderExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrderExperience(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.JobFinishDate = data
 		}
 	}
 
@@ -11138,6 +11193,14 @@ func (ec *executionContext) marshalOExperience2ᚖsadewaᚑportfolioᚑsvcᚋgra
 	return ec._Experience(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalOExperienceOrderByInput2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐExperienceOrderByInput(ctx context.Context, v any) (*model.ExperienceOrderByInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputExperienceOrderByInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOInt2ᚖint32(ctx context.Context, v any) (*int32, error) {
 	if v == nil {
 		return nil, nil
@@ -11186,6 +11249,22 @@ func (ec *executionContext) unmarshalOSortOrder2ᚖsadewaᚑportfolioᚑsvcᚋgr
 }
 
 func (ec *executionContext) marshalOSortOrder2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrder(ctx context.Context, sel ast.SelectionSet, v *model.SortOrder) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOSortOrderExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrderExperience(ctx context.Context, v any) (*model.SortOrderExperience, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.SortOrderExperience)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSortOrderExperience2ᚖsadewaᚑportfolioᚑsvcᚋgraphᚋmodelᚐSortOrderExperience(ctx context.Context, sel ast.SelectionSet, v *model.SortOrderExperience) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

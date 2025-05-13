@@ -50,8 +50,8 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 	}
 
 	// Initialize sorting parameters
-	sortField := "project_year"
-	sortDirection := "ASC"
+	sortField := "job_finish_date"
+	sortDirection := "DESC"
 
 	// Update sorting parameters based on orderBy input
 	if orderBy != nil {
