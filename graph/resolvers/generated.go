@@ -126,6 +126,8 @@ type ComplexityRoot struct {
 	}
 
 	Experience struct {
+		CompanyAddress func(childComplexity int) int
+		CompanyName    func(childComplexity int) int
 		CreatedAt      func(childComplexity int) int
 		CreatedBy      func(childComplexity int) int
 		ID             func(childComplexity int) int
@@ -615,6 +617,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EducationInput.UpdatedBy(childComplexity), true
+
+	case "Experience.companyAddress":
+		if e.complexity.Experience.CompanyAddress == nil {
+			break
+		}
+
+		return e.complexity.Experience.CompanyAddress(childComplexity), true
+
+	case "Experience.companyName":
+		if e.complexity.Experience.CompanyName == nil {
+			break
+		}
+
+		return e.complexity.Experience.CompanyName(childComplexity), true
 
 	case "Experience.createdAt":
 		if e.complexity.Experience.CreatedAt == nil {
@@ -1240,6 +1256,8 @@ type Experience {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    companyName: String
+    companyAddress: String
 }
 
 extend type Query {
@@ -4720,6 +4738,88 @@ func (ec *executionContext) fieldContext_Experience_isActive(_ context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Experience_companyName(ctx context.Context, field graphql.CollectedField, obj *model.Experience) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Experience_companyName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompanyName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Experience_companyName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Experience",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Experience_companyAddress(ctx context.Context, field graphql.CollectedField, obj *model.Experience) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Experience_companyAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompanyAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Experience_companyAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Experience",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _ExperienceConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ExperienceConnection_edges(ctx, field)
 	if err != nil {
@@ -4920,6 +5020,10 @@ func (ec *executionContext) fieldContext_ExperienceEdge_node(_ context.Context, 
 				return ec.fieldContext_Experience_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Experience_isActive(ctx, field)
+			case "companyName":
+				return ec.fieldContext_Experience_companyName(ctx, field)
+			case "companyAddress":
+				return ec.fieldContext_Experience_companyAddress(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -5207,6 +5311,10 @@ func (ec *executionContext) fieldContext_Mutation_createExperience(ctx context.C
 				return ec.fieldContext_Experience_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Experience_isActive(ctx, field)
+			case "companyName":
+				return ec.fieldContext_Experience_companyName(ctx, field)
+			case "companyAddress":
+				return ec.fieldContext_Experience_companyAddress(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -5284,6 +5392,10 @@ func (ec *executionContext) fieldContext_Mutation_updateExperience(ctx context.C
 				return ec.fieldContext_Experience_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Experience_isActive(ctx, field)
+			case "companyName":
+				return ec.fieldContext_Experience_companyName(ctx, field)
+			case "companyAddress":
+				return ec.fieldContext_Experience_companyAddress(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -6675,6 +6787,10 @@ func (ec *executionContext) fieldContext_Query_experience(ctx context.Context, f
 				return ec.fieldContext_Experience_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Experience_isActive(ctx, field)
+			case "companyName":
+				return ec.fieldContext_Experience_companyName(ctx, field)
+			case "companyAddress":
+				return ec.fieldContext_Experience_companyAddress(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -9558,6 +9674,10 @@ func (ec *executionContext) _Experience(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "companyName":
+			out.Values[i] = ec._Experience_companyName(ctx, field, obj)
+		case "companyAddress":
+			out.Values[i] = ec._Experience_companyAddress(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

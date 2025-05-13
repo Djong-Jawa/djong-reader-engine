@@ -26,6 +26,8 @@ type Experience {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    companyName: String
+    companyAddress: String
 }
 
 extend type Query {

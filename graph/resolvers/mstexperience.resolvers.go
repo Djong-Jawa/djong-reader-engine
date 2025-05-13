@@ -101,8 +101,10 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 	log.Println("sortField, sortDirection : $1, $2", sortField, sortDirection)
 
 	query := fmt.Sprintf(`
-        SELECT id, job_title, job_start_date, job_finish_date, job_description, created_at, created_by, updated_at, updated_by, is_active
-        FROM mst_experience
+        SELECT me.id, me.job_title, me.job_start_date, me.job_finish_date, me.job_description, 
+		mc.company_name, mc.company_address 
+		FROM mst_experience me
+		LEFT JOIN mst_company mc on mc.id = me.company_id
         ORDER BY %s %s
 		OFFSET $1
         LIMIT $2
@@ -124,7 +126,7 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 
 		if err := rows.Scan(
 			&exp.ID, &exp.JobTitle, &jobStartDate, &jobFinishDate, &exp.JobDescription,
-			&exp.CreatedAt, &exp.CreatedBy, &exp.UpdatedAt, &exp.UpdatedBy, &exp.IsActive,
+			&exp.CompanyName, &exp.CompanyAddress,
 		); err != nil {
 			log.Println("Error scanning experience:", err)
 			continue

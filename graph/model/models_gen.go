@@ -98,6 +98,8 @@ type Experience struct {
 	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
 	UpdatedBy      *string    `json:"updatedBy,omitempty"`
 	IsActive       bool       `json:"isActive"`
+	CompanyName    *string    `json:"companyName,omitempty"`
+	CompanyAddress *string    `json:"companyAddress,omitempty"`
 }
 
 type ExperienceConnection struct {
