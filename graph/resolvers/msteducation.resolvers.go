@@ -11,6 +11,7 @@ import (
 	"sadewa-portfolio-svc/graph/model"
 	"sadewa-portfolio-svc/graphqlutils"
 	"time"
+	"fmt"
 )
 
 // Education is the resolver for the Education field.
@@ -47,7 +48,7 @@ func (r *queryResolver) Education(ctx context.Context, id string) (*model.Educat
 }
 
 // EducationsCursor is the resolver for the EducationsCursor field.
-func (r *queryResolver) Educations(ctx context.Context, first *int32, after *string) (*model.EducationConnection, error) {
+func (r *queryResolver) Educations(ctx context.Context, first *int32, after *string, orderBy *model.EducationOrderByInput) (*model.EducationConnection, error) {
 	graphqlutils.RequestLogger(ctx, "Query Education")
 
 	var limit int32
@@ -57,6 +58,19 @@ func (r *queryResolver) Educations(ctx context.Context, first *int32, after *str
 		limit = 10 // default limit
 	}
 
+	// Initialize sorting parameters
+	sortField := "end_date"
+	sortDirection := "DESC"
+
+	// Update sorting parameters based on orderBy input
+	if orderBy != nil {
+		if orderBy.EndDate != nil {
+			sortField = "end_date"
+			sortDirection = string(*orderBy.EndDate)
+		}
+		// Add additional fields as needed
+	}
+
 	var cursor string
 	if after != nil {
 		cursor = *after
@@ -64,13 +78,15 @@ func (r *queryResolver) Educations(ctx context.Context, first *int32, after *str
 		cursor = ""
 	}
 
-	rows, err := config.DB.Query(ctx, `
+	query := fmt.Sprintf(`
         SELECT id, field_of_study, school, "degree", start_date, end_date, grade, description, activities_societies, skills, media, created_at, created_by, updated_at, updated_by, is_active
 		FROM public.mst_education
-        WHERE id > $1
-        ORDER BY id ASC
+        ORDER BY %s %s
+		OFFSET $1
         LIMIT $2
-    `, cursor, limit)
+    `, sortField, sortDirection)
+
+	rows, err := config.DB.Query(ctx, query, cursor, limit)
 	if err != nil {
 		log.Println("Error fetching Educations: ", err)
 		return nil, err

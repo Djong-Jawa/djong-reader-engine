@@ -30,7 +30,16 @@ type Education {
 
 extend type Query {
     education(id: ID!): Education
-    educations(first: Int, after: String): EducationConnection!
+    educations(first: Int, after: String, orderBy: EducationOrderByInput): EducationConnection!
+}
+
+enum SortOrderEducation {
+    ASC 
+    DESC 
+}
+
+input EducationOrderByInput {
+    endDate: SortOrderEducation
 }
 
 type EducationInput {

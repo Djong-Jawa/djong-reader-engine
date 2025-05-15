@@ -87,6 +87,10 @@ type EducationInput struct {
 	IsActive           bool       `json:"isActive"`
 }
 
+type EducationOrderByInput struct {
+	EndDate *SortOrderEducation `json:"endDate,omitempty"`
+}
+
 type Experience struct {
 	ID             string     `json:"id"`
 	JobTitle       string     `json:"jobTitle"`
@@ -218,6 +222,47 @@ func (e *SortOrder) UnmarshalGQL(v any) error {
 }
 
 func (e SortOrder) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SortOrderEducation string
+
+const (
+	SortOrderEducationAsc  SortOrderEducation = "ASC"
+	SortOrderEducationDesc SortOrderEducation = "DESC"
+)
+
+var AllSortOrderEducation = []SortOrderEducation{
+	SortOrderEducationAsc,
+	SortOrderEducationDesc,
+}
+
+func (e SortOrderEducation) IsValid() bool {
+	switch e {
+	case SortOrderEducationAsc, SortOrderEducationDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderEducation) String() string {
+	return string(e)
+}
+
+func (e *SortOrderEducation) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderEducation(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderEducation", str)
+	}
+	return nil
+}
+
+func (e SortOrderEducation) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
