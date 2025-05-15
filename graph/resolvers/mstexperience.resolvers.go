@@ -103,9 +103,9 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 	query := fmt.Sprintf(`
         SELECT me.id, me.job_title, me.job_start_date, me.job_finish_date, me.job_description, 
 		mc.company_name, mc.company_address 
-		FROM mst_experience me
-		LEFT JOIN mst_company mc on mc.id = me.company_id
-        ORDER BY %s %s
+		FROM mst_company mc 
+		FULL JOIN mst_experience me ON me.company_id = mc.id
+		ORDER BY mc.id DESC, %s %s
 		OFFSET $1
         LIMIT $2
     `, sortField, sortDirection)
