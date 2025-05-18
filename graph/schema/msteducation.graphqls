@@ -25,6 +25,7 @@ type Education {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    schoolLogoUrl: String
 }
 
 
@@ -58,4 +59,5 @@ type EducationInput {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    schoolLogoUrl: String 
 }

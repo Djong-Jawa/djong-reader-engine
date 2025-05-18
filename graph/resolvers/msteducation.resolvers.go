@@ -23,13 +23,14 @@ func (r *queryResolver) Education(ctx context.Context, id string) (*model.Educat
 	var edc model.Education
 	var createdAt *time.Time
 	err := config.DB.QueryRow(ctx, `
-		SELECT id, field_of_study, school, "degree", start_date, end_date, grade, description, activities_societies, skills, media, created_at, created_by, updated_at, updated_by, is_active
-		FROM public.mst_education
+		SELECT id, field_of_study, school, "degree", start_date, end_date, grade, description, activities_societies, skills, 
+		media, created_at, created_by, updated_at, updated_by, is_active, school_logo_url
+		FROM mst_education
 		WHERE id=$1
 	`, id).Scan(
 		&edc.ID, &edc.FieldOfStudy, &edc.School, &edc.Degree, &edc.StartDate, &edc.EndDate,
 		&edc.Grade, &edc.Description, &edc.ActivitiesSocietes, &edc.Skills, &edc.Media,
-		&createdAt, &edc.CreatedBy, &edc.UpdatedAt, &edc.UpdatedBy, &edc.IsActive,
+		&createdAt, &edc.CreatedBy, &edc.UpdatedAt, &edc.UpdatedBy, &edc.IsActive, &edc.SchoolLogoURL,
 	)
 
 	// ✅ Convert time.Time to model.Time
@@ -79,8 +80,9 @@ func (r *queryResolver) Educations(ctx context.Context, first *int32, after *str
 	}
 
 	query := fmt.Sprintf(`
-        SELECT id, field_of_study, school, "degree", start_date, end_date, grade, description, activities_societies, skills, media, created_at, created_by, updated_at, updated_by, is_active
-		FROM public.mst_education
+        SELECT id, field_of_study, school, "degree", start_date, end_date, grade, description, activities_societies, skills, 
+		media, created_at, created_by, updated_at, updated_by, is_active, school_logo_url
+		FROM mst_education
         ORDER BY %s %s
 		OFFSET $1
         LIMIT $2
@@ -103,7 +105,7 @@ func (r *queryResolver) Educations(ctx context.Context, first *int32, after *str
 		if err := rows.Scan(
 			&edc.ID, &edc.FieldOfStudy, &edc.School, &edc.Degree, &edc.StartDate, &edc.EndDate,
 			&edc.Grade, &edc.Description, &edc.ActivitiesSocietes, &edc.Skills, &edc.Media,
-			&createdAt, &edc.CreatedBy, &edc.UpdatedAt, &edc.UpdatedBy, &edc.IsActive,
+			&createdAt, &edc.CreatedBy, &edc.UpdatedAt, &edc.UpdatedBy, &edc.IsActive, &edc.SchoolLogoURL,
 		); err != nil {
 			log.Println("Error scanning Education:", err)
 			continue

@@ -59,6 +59,7 @@ type Education struct {
 	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
 	UpdatedBy          *string    `json:"updatedBy,omitempty"`
 	IsActive           bool       `json:"isActive"`
+	SchoolLogoURL      *string    `json:"schoolLogoUrl,omitempty"`
 }
 
 type EducationConnection struct {
@@ -87,6 +88,7 @@ type EducationInput struct {
 	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
 	UpdatedBy          *string    `json:"updatedBy,omitempty"`
 	IsActive           bool       `json:"isActive"`
+	SchoolLogoURL      *string    `json:"schoolLogoUrl,omitempty"`
 }
 
 type EducationOrderByInput struct {

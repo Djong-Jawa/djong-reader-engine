@@ -93,6 +93,7 @@ type ComplexityRoot struct {
 		IsActive           func(childComplexity int) int
 		Media              func(childComplexity int) int
 		School             func(childComplexity int) int
+		SchoolLogoURL      func(childComplexity int) int
 		Skills             func(childComplexity int) int
 		StartDate          func(childComplexity int) int
 		UpdatedAt          func(childComplexity int) int
@@ -121,6 +122,7 @@ type ComplexityRoot struct {
 		IsActive           func(childComplexity int) int
 		Media              func(childComplexity int) int
 		School             func(childComplexity int) int
+		SchoolLogoURL      func(childComplexity int) int
 		Skills             func(childComplexity int) int
 		StartDate          func(childComplexity int) int
 		UpdatedAt          func(childComplexity int) int
@@ -474,6 +476,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Education.School(childComplexity), true
 
+	case "Education.schoolLogoUrl":
+		if e.complexity.Education.SchoolLogoURL == nil {
+			break
+		}
+
+		return e.complexity.Education.SchoolLogoURL(childComplexity), true
+
 	case "Education.skills":
 		if e.complexity.Education.Skills == nil {
 			break
@@ -606,6 +615,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EducationInput.School(childComplexity), true
+
+	case "EducationInput.schoolLogoUrl":
+		if e.complexity.EducationInput.SchoolLogoURL == nil {
+			break
+		}
+
+		return e.complexity.EducationInput.SchoolLogoURL(childComplexity), true
 
 	case "EducationInput.skills":
 		if e.complexity.EducationInput.Skills == nil {
@@ -1230,6 +1246,7 @@ type Education {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    schoolLogoUrl: String
 }
 
 
@@ -1263,6 +1280,7 @@ type EducationInput {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    schoolLogoUrl: String 
 }`, BuiltIn: false},
 	{Name: "../schema/mstexperience.graphqls", Input: `scalar Time
 
@@ -3600,6 +3618,47 @@ func (ec *executionContext) fieldContext_Education_isActive(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Education_schoolLogoUrl(ctx context.Context, field graphql.CollectedField, obj *model.Education) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Education_schoolLogoUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SchoolLogoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Education_schoolLogoUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Education",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _EducationConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.EducationConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_EducationConnection_edges(ctx, field)
 	if err != nil {
@@ -3809,6 +3868,8 @@ func (ec *executionContext) fieldContext_EducationEdge_node(_ context.Context, f
 				return ec.fieldContext_Education_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Education_isActive(ctx, field)
+			case "schoolLogoUrl":
+				return ec.fieldContext_Education_schoolLogoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Education", field.Name)
 		},
@@ -4444,6 +4505,47 @@ func (ec *executionContext) fieldContext_EducationInput_isActive(_ context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EducationInput_schoolLogoUrl(ctx context.Context, field graphql.CollectedField, obj *model.EducationInput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_EducationInput_schoolLogoUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SchoolLogoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_EducationInput_schoolLogoUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EducationInput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6840,6 +6942,8 @@ func (ec *executionContext) fieldContext_Query_education(ctx context.Context, fi
 				return ec.fieldContext_Education_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Education_isActive(ctx, field)
+			case "schoolLogoUrl":
+				return ec.fieldContext_Education_schoolLogoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Education", field.Name)
 		},
@@ -9659,6 +9763,8 @@ func (ec *executionContext) _Education(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "schoolLogoUrl":
+			out.Values[i] = ec._Education_schoolLogoUrl(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9823,6 +9929,8 @@ func (ec *executionContext) _EducationInput(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "schoolLogoUrl":
+			out.Values[i] = ec._EducationInput_schoolLogoUrl(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
