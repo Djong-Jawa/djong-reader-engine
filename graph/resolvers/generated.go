@@ -54,6 +54,7 @@ type ComplexityRoot struct {
 		CreatedBy      func(childComplexity int) int
 		ID             func(childComplexity int) int
 		IsActive       func(childComplexity int) int
+		LogoURL        func(childComplexity int) int
 		UpdatedAt      func(childComplexity int) int
 		UpdatedBy      func(childComplexity int) int
 	}
@@ -74,6 +75,7 @@ type ComplexityRoot struct {
 		CreatedAt      func(childComplexity int) int
 		CreatedBy      func(childComplexity int) int
 		IsActive       func(childComplexity int) int
+		LogoURL        func(childComplexity int) int
 		UpdatedAt      func(childComplexity int) int
 		UpdatedBy      func(childComplexity int) int
 	}
@@ -136,6 +138,7 @@ type ComplexityRoot struct {
 		JobFinishDate  func(childComplexity int) int
 		JobStartDate   func(childComplexity int) int
 		JobTitle       func(childComplexity int) int
+		LogoURL        func(childComplexity int) int
 		UpdatedAt      func(childComplexity int) int
 		UpdatedBy      func(childComplexity int) int
 	}
@@ -282,6 +285,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Company.IsActive(childComplexity), true
 
+	case "Company.logoUrl":
+		if e.complexity.Company.LogoURL == nil {
+			break
+		}
+
+		return e.complexity.Company.LogoURL(childComplexity), true
+
 	case "Company.updatedAt":
 		if e.complexity.Company.UpdatedAt == nil {
 			break
@@ -358,6 +368,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CompanyInput.IsActive(childComplexity), true
+
+	case "CompanyInput.logoUrl":
+		if e.complexity.CompanyInput.LogoURL == nil {
+			break
+		}
+
+		return e.complexity.CompanyInput.LogoURL(childComplexity), true
 
 	case "CompanyInput.updatedAt":
 		if e.complexity.CompanyInput.UpdatedAt == nil {
@@ -687,6 +704,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Experience.JobTitle(childComplexity), true
+
+	case "Experience.logoUrl":
+		if e.complexity.Experience.LogoURL == nil {
+			break
+		}
+
+		return e.complexity.Experience.LogoURL(childComplexity), true
 
 	case "Experience.updatedAt":
 		if e.complexity.Experience.UpdatedAt == nil {
@@ -1160,6 +1184,7 @@ type Company {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    logoUrl: String
 }
 
 
@@ -1176,6 +1201,7 @@ type CompanyInput {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    logoUrl: String
 }`, BuiltIn: false},
 	{Name: "../schema/msteducation.graphqls", Input: `type EducationConnection {
     edges: [EducationEdge!]
@@ -1268,6 +1294,7 @@ type Experience {
     isActive: Boolean!
     companyName: String
     companyAddress: String
+    logoUrl: String
 }
 
 extend type Query {
@@ -2316,6 +2343,47 @@ func (ec *executionContext) fieldContext_Company_isActive(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Company_logoUrl(ctx context.Context, field graphql.CollectedField, obj *model.Company) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Company_logoUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LogoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Company_logoUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Company",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CompanyConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.CompanyConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CompanyConnection_edges(ctx, field)
 	if err != nil {
@@ -2509,6 +2577,8 @@ func (ec *executionContext) fieldContext_CompanyEdge_node(_ context.Context, fie
 				return ec.fieldContext_Company_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Company_isActive(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Company_logoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Company", field.Name)
 		},
@@ -2807,6 +2877,47 @@ func (ec *executionContext) fieldContext_CompanyInput_isActive(_ context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompanyInput_logoUrl(ctx context.Context, field graphql.CollectedField, obj *model.CompanyInput) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompanyInput_logoUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LogoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompanyInput_logoUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompanyInput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4848,6 +4959,47 @@ func (ec *executionContext) fieldContext_Experience_companyAddress(_ context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Experience_logoUrl(ctx context.Context, field graphql.CollectedField, obj *model.Experience) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Experience_logoUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LogoURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Experience_logoUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Experience",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _ExperienceConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.ExperienceConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ExperienceConnection_edges(ctx, field)
 	if err != nil {
@@ -5052,6 +5204,8 @@ func (ec *executionContext) fieldContext_ExperienceEdge_node(_ context.Context, 
 				return ec.fieldContext_Experience_companyName(ctx, field)
 			case "companyAddress":
 				return ec.fieldContext_Experience_companyAddress(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Experience_logoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -5343,6 +5497,8 @@ func (ec *executionContext) fieldContext_Mutation_createExperience(ctx context.C
 				return ec.fieldContext_Experience_companyName(ctx, field)
 			case "companyAddress":
 				return ec.fieldContext_Experience_companyAddress(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Experience_logoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -5424,6 +5580,8 @@ func (ec *executionContext) fieldContext_Mutation_updateExperience(ctx context.C
 				return ec.fieldContext_Experience_companyName(ctx, field)
 			case "companyAddress":
 				return ec.fieldContext_Experience_companyAddress(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Experience_logoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -6533,6 +6691,8 @@ func (ec *executionContext) fieldContext_Query_company(ctx context.Context, fiel
 				return ec.fieldContext_Company_updatedBy(ctx, field)
 			case "isActive":
 				return ec.fieldContext_Company_isActive(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Company_logoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Company", field.Name)
 		},
@@ -6819,6 +6979,8 @@ func (ec *executionContext) fieldContext_Query_experience(ctx context.Context, f
 				return ec.fieldContext_Experience_companyName(ctx, field)
 			case "companyAddress":
 				return ec.fieldContext_Experience_companyAddress(ctx, field)
+			case "logoUrl":
+				return ec.fieldContext_Experience_logoUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Experience", field.Name)
 		},
@@ -9267,6 +9429,8 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "logoUrl":
+			out.Values[i] = ec._Company_logoUrl(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9406,6 +9570,8 @@ func (ec *executionContext) _CompanyInput(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "logoUrl":
+			out.Values[i] = ec._CompanyInput_logoUrl(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9733,6 +9899,8 @@ func (ec *executionContext) _Experience(ctx context.Context, sel ast.SelectionSe
 			out.Values[i] = ec._Experience_companyName(ctx, field, obj)
 		case "companyAddress":
 			out.Values[i] = ec._Experience_companyAddress(ctx, field, obj)
+		case "logoUrl":
+			out.Values[i] = ec._Experience_logoUrl(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

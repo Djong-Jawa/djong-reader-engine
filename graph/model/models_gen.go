@@ -18,6 +18,7 @@ type Company struct {
 	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
 	UpdatedBy      *string    `json:"updatedBy,omitempty"`
 	IsActive       bool       `json:"isActive"`
+	LogoURL        *string    `json:"logoUrl,omitempty"`
 }
 
 type CompanyConnection struct {
@@ -38,6 +39,7 @@ type CompanyInput struct {
 	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
 	UpdatedBy      *string    `json:"updatedBy,omitempty"`
 	IsActive       bool       `json:"isActive"`
+	LogoURL        *string    `json:"logoUrl,omitempty"`
 }
 
 type Education struct {
@@ -104,6 +106,7 @@ type Experience struct {
 	IsActive       bool       `json:"isActive"`
 	CompanyName    *string    `json:"companyName,omitempty"`
 	CompanyAddress *string    `json:"companyAddress,omitempty"`
+	LogoURL        *string    `json:"logoUrl,omitempty"`
 }
 
 type ExperienceConnection struct {

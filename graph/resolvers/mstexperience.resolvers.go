@@ -102,7 +102,7 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 
 	query := fmt.Sprintf(`
         SELECT me.id, me.job_title, me.job_start_date, me.job_finish_date, me.job_description, 
-		mc.company_name, mc.company_address 
+		mc.company_name, mc.company_address, mc.logo_url
 		FROM mst_company mc 
 		FULL JOIN mst_experience me ON me.company_id = mc.id
 		ORDER BY mc.id DESC, %s %s
@@ -126,7 +126,7 @@ func (r *queryResolver) Experiences(ctx context.Context, first *int32, after *st
 
 		if err := rows.Scan(
 			&exp.ID, &exp.JobTitle, &jobStartDate, &jobFinishDate, &exp.JobDescription,
-			&exp.CompanyName, &exp.CompanyAddress,
+			&exp.CompanyName, &exp.CompanyAddress, &exp.LogoURL,
 		); err != nil {
 			log.Println("Error scanning experience:", err)
 			continue

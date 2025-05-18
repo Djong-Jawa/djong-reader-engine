@@ -6,12 +6,12 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sadewa-portfolio-svc/config"
 	"sadewa-portfolio-svc/graph/model"
 	"sadewa-portfolio-svc/graphqlutils"
 	"time"
-	"fmt"
 )
 
 // Education is the resolver for the Education field.

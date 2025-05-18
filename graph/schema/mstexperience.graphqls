@@ -28,6 +28,7 @@ type Experience {
     isActive: Boolean!
     companyName: String
     companyAddress: String
+    logoUrl: String
 }
 
 extend type Query {

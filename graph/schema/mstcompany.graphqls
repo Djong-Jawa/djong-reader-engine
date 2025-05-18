@@ -17,6 +17,7 @@ type Company {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    logoUrl: String
 }
 
 
@@ -33,4 +34,5 @@ type CompanyInput {
     updatedAt: Time
     updatedBy: String
     isActive: Boolean!
+    logoUrl: String
 }
