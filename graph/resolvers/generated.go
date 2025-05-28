@@ -177,6 +177,7 @@ type ComplexityRoot struct {
 		DeploymentStack func(childComplexity int) int
 		Description     func(childComplexity int) int
 		FrontendStack   func(childComplexity int) int
+		HeaderImageURL  func(childComplexity int) int
 		ID              func(childComplexity int) int
 		IsActive        func(childComplexity int) int
 		ProjectYear     func(childComplexity int) int
@@ -905,6 +906,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Portfolio.FrontendStack(childComplexity), true
 
+	case "Portfolio.headerImageUrl":
+		if e.complexity.Portfolio.HeaderImageURL == nil {
+			break
+		}
+
+		return e.complexity.Portfolio.HeaderImageURL(childComplexity), true
+
 	case "Portfolio.id":
 		if e.complexity.Portfolio.ID == nil {
 			break
@@ -1370,6 +1378,7 @@ type Portfolio {
     updatedBy: String
     isActive: Boolean!
     projectYear: Int
+    headerImageUrl: String
 }
 
 type Query {
@@ -1405,6 +1414,7 @@ input PortfolioInput {
     updatedBy: String
     isActive: Boolean!
     projectYear: Int
+    headerImageUrl: String
 }
 `, BuiltIn: false},
 }
@@ -5380,6 +5390,8 @@ func (ec *executionContext) fieldContext_Mutation_createPortfolio(ctx context.Co
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
 			case "projectYear":
 				return ec.fieldContext_Portfolio_projectYear(ctx, field)
+			case "headerImageUrl":
+				return ec.fieldContext_Portfolio_headerImageUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -5463,6 +5475,8 @@ func (ec *executionContext) fieldContext_Mutation_updatePortfolio(ctx context.Co
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
 			case "projectYear":
 				return ec.fieldContext_Portfolio_projectYear(ctx, field)
+			case "headerImageUrl":
+				return ec.fieldContext_Portfolio_headerImageUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -6387,6 +6401,47 @@ func (ec *executionContext) fieldContext_Portfolio_projectYear(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Portfolio_headerImageUrl(ctx context.Context, field graphql.CollectedField, obj *model.Portfolio) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Portfolio_headerImageUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HeaderImageURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Portfolio_headerImageUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Portfolio",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PortfolioConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.PortfolioConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PortfolioConnection_edges(ctx, field)
 	if err != nil {
@@ -6593,6 +6648,8 @@ func (ec *executionContext) fieldContext_PortfolioEdge_node(_ context.Context, f
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
 			case "projectYear":
 				return ec.fieldContext_Portfolio_projectYear(ctx, field)
+			case "headerImageUrl":
+				return ec.fieldContext_Portfolio_headerImageUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -6723,6 +6780,8 @@ func (ec *executionContext) fieldContext_Query_portfolio(ctx context.Context, fi
 				return ec.fieldContext_Portfolio_isActive(ctx, field)
 			case "projectYear":
 				return ec.fieldContext_Portfolio_projectYear(ctx, field)
+			case "headerImageUrl":
+				return ec.fieldContext_Portfolio_headerImageUrl(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Portfolio", field.Name)
 		},
@@ -9376,7 +9435,7 @@ func (ec *executionContext) unmarshalInputPortfolioInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "description", "backendStack", "frontendStack", "databaseStack", "deploymentStack", "createdBy", "updatedBy", "isActive", "projectYear"}
+	fieldsInOrder := [...]string{"title", "description", "backendStack", "frontendStack", "databaseStack", "deploymentStack", "createdBy", "updatedBy", "isActive", "projectYear", "headerImageUrl"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9453,6 +9512,13 @@ func (ec *executionContext) unmarshalInputPortfolioInput(ctx context.Context, ob
 				return it, err
 			}
 			it.ProjectYear = data
+		case "headerImageUrl":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("headerImageUrl"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HeaderImageURL = data
 		}
 	}
 
@@ -10291,6 +10357,8 @@ func (ec *executionContext) _Portfolio(ctx context.Context, sel ast.SelectionSet
 			}
 		case "projectYear":
 			out.Values[i] = ec._Portfolio_projectYear(ctx, field, obj)
+		case "headerImageUrl":
+			out.Values[i] = ec._Portfolio_headerImageUrl(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

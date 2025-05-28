@@ -157,6 +157,7 @@ type Portfolio struct {
 	UpdatedBy       *string    `json:"updatedBy,omitempty"`
 	IsActive        bool       `json:"isActive"`
 	ProjectYear     *int32     `json:"projectYear,omitempty"`
+	HeaderImageURL  *string    `json:"headerImageUrl,omitempty"`
 }
 
 type PortfolioConnection struct {
@@ -180,6 +181,7 @@ type PortfolioInput struct {
 	UpdatedBy       *string `json:"updatedBy,omitempty"`
 	IsActive        bool    `json:"isActive"`
 	ProjectYear     *int32  `json:"projectYear,omitempty"`
+	HeaderImageURL  *string `json:"headerImageUrl,omitempty"`
 }
 
 type PortfolioOrderByInput struct {
