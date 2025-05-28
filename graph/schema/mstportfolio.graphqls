@@ -23,6 +23,7 @@ type Portfolio {
     updatedBy: String
     isActive: Boolean!
     projectYear: Int
+    headerImageUrl: String
 }
 
 type Query {
@@ -58,4 +59,5 @@ input PortfolioInput {
     updatedBy: String
     isActive: Boolean!
     projectYear: Int
+    headerImageUrl: String
 }

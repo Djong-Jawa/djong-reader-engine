@@ -73,7 +73,7 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 
 	query := fmt.Sprintf(`
 		SELECT id, title, description, backend_stack, frontend_stack, database_stack, 
-		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active, project_year
+		       deployment_stack, created_at, created_by, updated_at, updated_by, is_active, project_year, header_image_url
 		FROM mst_portfolio
 		ORDER BY %s %s
 		OFFSET $1
@@ -95,7 +95,7 @@ func (r *queryResolver) Portfolios(ctx context.Context, first *int32, after *str
 
 		err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.BackendStack, &p.FrontendStack, &p.DatabaseStack,
-			&p.DeploymentStack, &createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive, &p.ProjectYear,
+			&p.DeploymentStack, &createdAt, &p.CreatedBy, &updatedAt, &p.UpdatedBy, &p.IsActive, &p.ProjectYear, &p.HeaderImageURL,
 		)
 		if err != nil {
 			log.Println("Error scanning portfolio:", err)
