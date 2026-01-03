@@ -1,4 +1,4 @@
-module sadewa-portfolio-svc
+module djong-reader-engine
 
 go 1.24.0
 

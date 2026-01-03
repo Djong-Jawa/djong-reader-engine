@@ -32,6 +32,12 @@ func ConnectDB() {
 		log.Fatalf("Could not ping database: %v\n", err)
 	}
 
+	// Set the search_path to djong_phinisi schema
+	_, err = dbpool.Exec(context.Background(), "SET search_path TO djong_phinisi")
+	if err != nil {
+		log.Fatalf("Could not set search_path: %v\n", err)
+	}
+
 	DB = dbpool
-	log.Println("Connected to the database")
+	log.Println("Connected to the database using djong_phinisi schema")
 }
