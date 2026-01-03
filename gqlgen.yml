@@ -156,4 +156,4 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
   
   Time:                   # ✅ Tell gqlgen that Time maps to model.Time
-    model: sadewa-portfolio-svc/graph/model.Time
+    model: djong-reader-engine/graph/model.Time

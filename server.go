@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"sadewa-portfolio-svc/config"
-	"sadewa-portfolio-svc/graph/resolvers"
+	"djong-reader-engine/config"
+	"djong-reader-engine/graph/resolvers"
 
 	"github.com/joho/godotenv"
 	"os"

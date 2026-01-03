@@ -1,0 +1,43 @@
+scalar Time
+
+type PageInfo {
+    endCursor: String
+    hasNextPage: Boolean!
+}
+
+
+type SalesPipelineConnection {
+    edges: [SalesPipelineEdge!]
+    pageInfo: PageInfo
+}  
+
+type SalesPipelineEdge {
+    cursor: String!
+    node: SalesPipeline!
+}
+
+type SalesPipeline {
+    id: ID!
+    value: String!
+    estimatedCloseDate: Time!
+    comment: String
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+extend type Query {
+    salesPipeline(id: ID!): SalesPipeline
+    salesPipelines(first: Int, after: String, orderBy: SalesPipelineOrderByInput): SalesPipelineConnection!
+}
+
+enum SortOrderSalesPipeline {
+    ASC 
+    DESC 
+}
+
+input SalesPipelineOrderByInput {
+    endDate: SortOrderSalesPipeline
+}

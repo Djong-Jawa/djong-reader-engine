@@ -9,307 +9,77 @@ import (
 	"time"
 )
 
-type Company struct {
-	ID             string     `json:"id"`
-	CompanyName    string     `json:"companyName"`
-	CompanyAddress *string    `json:"companyAddress,omitempty"`
-	CreatedAt      time.Time  `json:"createdAt"`
-	CreatedBy      *string    `json:"createdBy,omitempty"`
-	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
-	UpdatedBy      *string    `json:"updatedBy,omitempty"`
-	IsActive       bool       `json:"isActive"`
-	LogoURL        *string    `json:"logoUrl,omitempty"`
-}
-
-type CompanyConnection struct {
-	Edges    []*CompanyEdge `json:"edges,omitempty"`
-	PageInfo *PageInfo      `json:"pageInfo,omitempty"`
-}
-
-type CompanyEdge struct {
-	Cursor string   `json:"cursor"`
-	Node   *Company `json:"node"`
-}
-
-type CompanyInput struct {
-	CompanyName    string     `json:"companyName"`
-	CompanyAddress *string    `json:"companyAddress,omitempty"`
-	CreatedAt      time.Time  `json:"createdAt"`
-	CreatedBy      *string    `json:"createdBy,omitempty"`
-	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
-	UpdatedBy      *string    `json:"updatedBy,omitempty"`
-	IsActive       bool       `json:"isActive"`
-	LogoURL        *string    `json:"logoUrl,omitempty"`
-}
-
-type Education struct {
-	ID                 string     `json:"id"`
-	FieldOfStudy       string     `json:"fieldOfStudy"`
-	School             string     `json:"school"`
-	Degree             string     `json:"degree"`
-	StartDate          time.Time  `json:"startDate"`
-	EndDate            *time.Time `json:"endDate,omitempty"`
-	Grade              *string    `json:"grade,omitempty"`
-	Description        *string    `json:"description,omitempty"`
-	ActivitiesSocietes *string    `json:"activitiesSocietes,omitempty"`
-	Skills             *string    `json:"skills,omitempty"`
-	Media              *string    `json:"media,omitempty"`
-	CreatedAt          time.Time  `json:"createdAt"`
-	CreatedBy          *string    `json:"createdBy,omitempty"`
-	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
-	UpdatedBy          *string    `json:"updatedBy,omitempty"`
-	IsActive           bool       `json:"isActive"`
-	SchoolLogoURL      *string    `json:"schoolLogoUrl,omitempty"`
-}
-
-type EducationConnection struct {
-	Edges    []*EducationEdge `json:"edges,omitempty"`
-	PageInfo *PageInfo        `json:"pageInfo,omitempty"`
-}
-
-type EducationEdge struct {
-	Cursor string     `json:"cursor"`
-	Node   *Education `json:"node"`
-}
-
-type EducationInput struct {
-	FieldOfStudy       string     `json:"fieldOfStudy"`
-	School             string     `json:"school"`
-	Degree             string     `json:"degree"`
-	StartDate          time.Time  `json:"startDate"`
-	EndDate            *time.Time `json:"endDate,omitempty"`
-	Grade              *string    `json:"grade,omitempty"`
-	Description        *string    `json:"description,omitempty"`
-	ActivitiesSocietes *string    `json:"activitiesSocietes,omitempty"`
-	Skills             *string    `json:"skills,omitempty"`
-	Media              *string    `json:"media,omitempty"`
-	CreatedAt          time.Time  `json:"createdAt"`
-	CreatedBy          *string    `json:"createdBy,omitempty"`
-	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
-	UpdatedBy          *string    `json:"updatedBy,omitempty"`
-	IsActive           bool       `json:"isActive"`
-	SchoolLogoURL      *string    `json:"schoolLogoUrl,omitempty"`
-}
-
-type EducationOrderByInput struct {
-	EndDate *SortOrderEducation `json:"endDate,omitempty"`
-}
-
-type Experience struct {
-	ID             string     `json:"id"`
-	JobTitle       string     `json:"jobTitle"`
-	JobStartDate   time.Time  `json:"jobStartDate"`
-	JobFinishDate  time.Time  `json:"jobFinishDate"`
-	JobDescription *string    `json:"jobDescription,omitempty"`
-	CreatedAt      time.Time  `json:"createdAt"`
-	CreatedBy      *string    `json:"createdBy,omitempty"`
-	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
-	UpdatedBy      *string    `json:"updatedBy,omitempty"`
-	IsActive       bool       `json:"isActive"`
-	CompanyName    *string    `json:"companyName,omitempty"`
-	CompanyAddress *string    `json:"companyAddress,omitempty"`
-	LogoURL        *string    `json:"logoUrl,omitempty"`
-}
-
-type ExperienceConnection struct {
-	Edges    []*ExperienceEdge `json:"edges"`
-	PageInfo *PageInfo         `json:"pageInfo,omitempty"`
-}
-
-type ExperienceEdge struct {
-	Cursor string      `json:"cursor"`
-	Node   *Experience `json:"node"`
-}
-
-type ExperienceInput struct {
-	JobTitle       string    `json:"jobTitle"`
-	JobStartDate   time.Time `json:"jobStartDate"`
-	JobFinishDate  time.Time `json:"jobFinishDate"`
-	CreatedAt      time.Time `json:"createdAt"`
-	CreatedBy      *string   `json:"createdBy,omitempty"`
-	IsActive       bool      `json:"isActive"`
-	JobDescription *string   `json:"jobDescription,omitempty"`
-}
-
-type ExperienceOrderByInput struct {
-	JobFinishDate *SortOrderExperience `json:"jobFinishDate,omitempty"`
-}
-
-type Mutation struct {
-}
-
 type PageInfo struct {
 	EndCursor   *string `json:"endCursor,omitempty"`
 	HasNextPage bool    `json:"hasNextPage"`
 }
 
-type Portfolio struct {
-	ID              string     `json:"id"`
-	Title           string     `json:"title"`
-	Description     *string    `json:"description,omitempty"`
-	BackendStack    *string    `json:"backendStack,omitempty"`
-	FrontendStack   *string    `json:"frontendStack,omitempty"`
-	DatabaseStack   *string    `json:"databaseStack,omitempty"`
-	DeploymentStack *string    `json:"deploymentStack,omitempty"`
-	CreatedAt       time.Time  `json:"createdAt"`
-	CreatedBy       *string    `json:"createdBy,omitempty"`
-	UpdatedAt       *time.Time `json:"updatedAt,omitempty"`
-	UpdatedBy       *string    `json:"updatedBy,omitempty"`
-	IsActive        bool       `json:"isActive"`
-	ProjectYear     *int32     `json:"projectYear,omitempty"`
-	HeaderImageURL  *string    `json:"headerImageUrl,omitempty"`
-}
-
-type PortfolioConnection struct {
-	Edges    []*PortfolioEdge `json:"edges"`
-	PageInfo *PageInfo        `json:"pageInfo,omitempty"`
-}
-
-type PortfolioEdge struct {
-	Cursor string     `json:"cursor"`
-	Node   *Portfolio `json:"node"`
-}
-
-type PortfolioInput struct {
-	Title           string  `json:"title"`
-	Description     *string `json:"description,omitempty"`
-	BackendStack    *string `json:"backendStack,omitempty"`
-	FrontendStack   *string `json:"frontendStack,omitempty"`
-	DatabaseStack   *string `json:"databaseStack,omitempty"`
-	DeploymentStack *string `json:"deploymentStack,omitempty"`
-	CreatedBy       *string `json:"createdBy,omitempty"`
-	UpdatedBy       *string `json:"updatedBy,omitempty"`
-	IsActive        bool    `json:"isActive"`
-	ProjectYear     *int32  `json:"projectYear,omitempty"`
-	HeaderImageURL  *string `json:"headerImageUrl,omitempty"`
-}
-
-type PortfolioOrderByInput struct {
-	ProjectYear *SortOrder `json:"projectYear,omitempty"`
-}
-
 type Query struct {
 }
 
-type SortOrder string
-
-const (
-	SortOrderAsc  SortOrder = "ASC"
-	SortOrderDesc SortOrder = "DESC"
-)
-
-var AllSortOrder = []SortOrder{
-	SortOrderAsc,
-	SortOrderDesc,
+type SalesPipeline struct {
+	ID                 string     `json:"id"`
+	Value              string     `json:"value"`
+	EstimatedCloseDate time.Time  `json:"estimatedCloseDate"`
+	Comment            *string    `json:"comment,omitempty"`
+	CreatedAt          time.Time  `json:"createdAt"`
+	CreatedBy          *string    `json:"createdBy,omitempty"`
+	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy          *string    `json:"updatedBy,omitempty"`
+	IsActive           bool       `json:"isActive"`
 }
 
-func (e SortOrder) IsValid() bool {
+type SalesPipelineConnection struct {
+	Edges    []*SalesPipelineEdge `json:"edges,omitempty"`
+	PageInfo *PageInfo            `json:"pageInfo,omitempty"`
+}
+
+type SalesPipelineEdge struct {
+	Cursor string         `json:"cursor"`
+	Node   *SalesPipeline `json:"node"`
+}
+
+type SalesPipelineOrderByInput struct {
+	EndDate *SortOrderSalesPipeline `json:"endDate,omitempty"`
+}
+
+type SortOrderSalesPipeline string
+
+const (
+	SortOrderSalesPipelineAsc  SortOrderSalesPipeline = "ASC"
+	SortOrderSalesPipelineDesc SortOrderSalesPipeline = "DESC"
+)
+
+var AllSortOrderSalesPipeline = []SortOrderSalesPipeline{
+	SortOrderSalesPipelineAsc,
+	SortOrderSalesPipelineDesc,
+}
+
+func (e SortOrderSalesPipeline) IsValid() bool {
 	switch e {
-	case SortOrderAsc, SortOrderDesc:
+	case SortOrderSalesPipelineAsc, SortOrderSalesPipelineDesc:
 		return true
 	}
 	return false
 }
 
-func (e SortOrder) String() string {
+func (e SortOrderSalesPipeline) String() string {
 	return string(e)
 }
 
-func (e *SortOrder) UnmarshalGQL(v any) error {
+func (e *SortOrderSalesPipeline) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = SortOrder(str)
+	*e = SortOrderSalesPipeline(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid SortOrder", str)
+		return fmt.Errorf("%s is not a valid SortOrderSalesPipeline", str)
 	}
 	return nil
 }
 
-func (e SortOrder) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
-}
-
-type SortOrderEducation string
-
-const (
-	SortOrderEducationAsc  SortOrderEducation = "ASC"
-	SortOrderEducationDesc SortOrderEducation = "DESC"
-)
-
-var AllSortOrderEducation = []SortOrderEducation{
-	SortOrderEducationAsc,
-	SortOrderEducationDesc,
-}
-
-func (e SortOrderEducation) IsValid() bool {
-	switch e {
-	case SortOrderEducationAsc, SortOrderEducationDesc:
-		return true
-	}
-	return false
-}
-
-func (e SortOrderEducation) String() string {
-	return string(e)
-}
-
-func (e *SortOrderEducation) UnmarshalGQL(v any) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = SortOrderEducation(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid SortOrderEducation", str)
-	}
-	return nil
-}
-
-func (e SortOrderEducation) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
-}
-
-type SortOrderExperience string
-
-const (
-	SortOrderExperienceAsc  SortOrderExperience = "ASC"
-	SortOrderExperienceDesc SortOrderExperience = "DESC"
-)
-
-var AllSortOrderExperience = []SortOrderExperience{
-	SortOrderExperienceAsc,
-	SortOrderExperienceDesc,
-}
-
-func (e SortOrderExperience) IsValid() bool {
-	switch e {
-	case SortOrderExperienceAsc, SortOrderExperienceDesc:
-		return true
-	}
-	return false
-}
-
-func (e SortOrderExperience) String() string {
-	return string(e)
-}
-
-func (e *SortOrderExperience) UnmarshalGQL(v any) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = SortOrderExperience(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid SortOrderExperience", str)
-	}
-	return nil
-}
-
-func (e SortOrderExperience) MarshalGQL(w io.Writer) {
+func (e SortOrderSalesPipeline) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
