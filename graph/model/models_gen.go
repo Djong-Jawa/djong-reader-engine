@@ -19,9 +19,10 @@ type Query struct {
 
 type SalesPipeline struct {
 	ID                 string     `json:"id"`
-	Value              string     `json:"value"`
-	EstimatedCloseDate time.Time  `json:"estimatedCloseDate"`
-	Comment            *string    `json:"comment,omitempty"`
+	Value              *string    `json:"value,omitempty"`
+	EstimatedCloseDate *time.Time `json:"estimatedCloseDate,omitempty"`
+	PaxName            *string    `json:"paxName,omitempty"`
+	PicName            *string    `json:"picName,omitempty"`
 	CreatedAt          time.Time  `json:"createdAt"`
 	CreatedBy          *string    `json:"createdBy,omitempty"`
 	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
@@ -40,7 +41,7 @@ type SalesPipelineEdge struct {
 }
 
 type SalesPipelineOrderByInput struct {
-	EndDate *SortOrderSalesPipeline `json:"endDate,omitempty"`
+	CreatedAt *SortOrderSalesPipeline `json:"createdAt,omitempty"`
 }
 
 type SortOrderSalesPipeline string
