@@ -23,11 +23,11 @@ func (r *queryResolver) SalesPipeline(ctx context.Context, id string) (*model.Sa
 	var slsPln model.SalesPipeline
 	var createdAt *time.Time
 	err := config.DB.QueryRow(ctx, `
-		SELECT id, value, estimated_close_date, comment, created_at, created_by, updated_at, updated_by, is_active
+		SELECT id, value, estimated_close_date, pax_name, pic_name, created_at, created_by, updated_at, updated_by, is_active
 		FROM mst_sales_pipeline
 		WHERE id=$1
 	`, id).Scan(
-		&slsPln.ID, &slsPln.Value, &slsPln.EstimatedCloseDate, &slsPln.Comment,
+		&slsPln.ID, &slsPln.Value, &slsPln.EstimatedCloseDate, &slsPln.PicName, &slsPln.PaxName,
 		&createdAt, &slsPln.CreatedBy, &slsPln.UpdatedAt, &slsPln.UpdatedBy, &slsPln.IsActive,
 	)
 
@@ -58,14 +58,14 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
 	}
 
 	// Initialize sorting parameters
-	sortField := "end_date"
+	sortField := "created_at"
 	sortDirection := "DESC"
 
 	// Update sorting parameters based on orderBy input
 	if orderBy != nil {
-		if orderBy.EndDate != nil {
-			sortField = "end_date"
-			sortDirection = string(*orderBy.EndDate)
+		if orderBy.CreatedAt != nil {
+			sortField = "created_at"
+			sortDirection = string(*orderBy.CreatedAt)
 		}
 		// Add additional fields as needed
 	}
@@ -78,7 +78,7 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
 	}
 
 	query := fmt.Sprintf(`
-        SELECT id, value, estimated_close_date, comment, created_at, created_by, updated_at, updated_by, is_active
+        SELECT id, value, estimated_close_date, pax_name, pic_name, created_at, created_by, updated_at, updated_by, is_active
 		FROM mst_sales_pipeline
         ORDER BY %s %s
 		OFFSET $1
@@ -100,7 +100,7 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
 		var createdAt *time.Time
 
 		if err := rows.Scan(
-			&slsPln.ID, &slsPln.Value, &slsPln.EstimatedCloseDate, &slsPln.Comment,
+			&slsPln.ID, &slsPln.Value, &slsPln.EstimatedCloseDate, &slsPln.PaxName, &slsPln.PicName,
 			&createdAt, &slsPln.CreatedBy, &slsPln.UpdatedAt, &slsPln.UpdatedBy, &slsPln.IsActive,
 		); err != nil {
 			log.Println("Error scanning SalesPipeline:", err)

@@ -57,12 +57,13 @@ type ComplexityRoot struct {
 	}
 
 	SalesPipeline struct {
-		Comment            func(childComplexity int) int
 		CreatedAt          func(childComplexity int) int
 		CreatedBy          func(childComplexity int) int
 		EstimatedCloseDate func(childComplexity int) int
 		ID                 func(childComplexity int) int
 		IsActive           func(childComplexity int) int
+		PaxName            func(childComplexity int) int
+		PicName            func(childComplexity int) int
 		UpdatedAt          func(childComplexity int) int
 		UpdatedBy          func(childComplexity int) int
 		Value              func(childComplexity int) int
@@ -141,13 +142,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.SalesPipelines(childComplexity, args["first"].(*int32), args["after"].(*string), args["orderBy"].(*model.SalesPipelineOrderByInput)), true
 
-	case "SalesPipeline.comment":
-		if e.complexity.SalesPipeline.Comment == nil {
-			break
-		}
-
-		return e.complexity.SalesPipeline.Comment(childComplexity), true
-
 	case "SalesPipeline.createdAt":
 		if e.complexity.SalesPipeline.CreatedAt == nil {
 			break
@@ -182,6 +176,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SalesPipeline.IsActive(childComplexity), true
+
+	case "SalesPipeline.paxName":
+		if e.complexity.SalesPipeline.PaxName == nil {
+			break
+		}
+
+		return e.complexity.SalesPipeline.PaxName(childComplexity), true
+
+	case "SalesPipeline.picName":
+		if e.complexity.SalesPipeline.PicName == nil {
+			break
+		}
+
+		return e.complexity.SalesPipeline.PicName(childComplexity), true
 
 	case "SalesPipeline.updatedAt":
 		if e.complexity.SalesPipeline.UpdatedAt == nil {
@@ -343,9 +351,10 @@ type SalesPipelineEdge {
 
 type SalesPipeline {
     id: ID!
-    value: String!
-    estimatedCloseDate: Time!
-    comment: String
+    value: String
+    estimatedCloseDate: Time
+    paxName: String
+    picName: String
     createdAt: Time!
     createdBy: String
     updatedAt: Time
@@ -364,7 +373,7 @@ enum SortOrderSalesPipeline {
 }
 
 input SalesPipelineOrderByInput {
-    endDate: SortOrderSalesPipeline
+    createdAt: SortOrderSalesPipeline
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -705,8 +714,10 @@ func (ec *executionContext) fieldContext_Query_salesPipeline(ctx context.Context
 				return ec.fieldContext_SalesPipeline_value(ctx, field)
 			case "estimatedCloseDate":
 				return ec.fieldContext_SalesPipeline_estimatedCloseDate(ctx, field)
-			case "comment":
-				return ec.fieldContext_SalesPipeline_comment(ctx, field)
+			case "paxName":
+				return ec.fieldContext_SalesPipeline_paxName(ctx, field)
+			case "picName":
+				return ec.fieldContext_SalesPipeline_picName(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_SalesPipeline_createdAt(ctx, field)
 			case "createdBy":
@@ -992,14 +1003,11 @@ func (ec *executionContext) _SalesPipeline_value(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SalesPipeline_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1036,14 +1044,11 @@ func (ec *executionContext) _SalesPipeline_estimatedCloseDate(ctx context.Contex
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_SalesPipeline_estimatedCloseDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1059,8 +1064,8 @@ func (ec *executionContext) fieldContext_SalesPipeline_estimatedCloseDate(_ cont
 	return fc, nil
 }
 
-func (ec *executionContext) _SalesPipeline_comment(ctx context.Context, field graphql.CollectedField, obj *model.SalesPipeline) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_SalesPipeline_comment(ctx, field)
+func (ec *executionContext) _SalesPipeline_paxName(ctx context.Context, field graphql.CollectedField, obj *model.SalesPipeline) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SalesPipeline_paxName(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1073,7 +1078,7 @@ func (ec *executionContext) _SalesPipeline_comment(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Comment, nil
+		return obj.PaxName, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1087,7 +1092,48 @@ func (ec *executionContext) _SalesPipeline_comment(ctx context.Context, field gr
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SalesPipeline_comment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SalesPipeline_paxName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesPipeline",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesPipeline_picName(ctx context.Context, field graphql.CollectedField, obj *model.SalesPipeline) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SalesPipeline_picName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PicName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SalesPipeline_picName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SalesPipeline",
 		Field:      field,
@@ -1494,8 +1540,10 @@ func (ec *executionContext) fieldContext_SalesPipelineEdge_node(_ context.Contex
 				return ec.fieldContext_SalesPipeline_value(ctx, field)
 			case "estimatedCloseDate":
 				return ec.fieldContext_SalesPipeline_estimatedCloseDate(ctx, field)
-			case "comment":
-				return ec.fieldContext_SalesPipeline_comment(ctx, field)
+			case "paxName":
+				return ec.fieldContext_SalesPipeline_paxName(ctx, field)
+			case "picName":
+				return ec.fieldContext_SalesPipeline_picName(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_SalesPipeline_createdAt(ctx, field)
 			case "createdBy":
@@ -3471,20 +3519,20 @@ func (ec *executionContext) unmarshalInputSalesPipelineOrderByInput(ctx context.
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"endDate"}
+	fieldsInOrder := [...]string{"createdAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "endDate":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endDate"))
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOSortOrderSalesPipeline2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderSalesPipeline(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.EndDate = data
+			it.CreatedAt = data
 		}
 	}
 
@@ -3649,16 +3697,12 @@ func (ec *executionContext) _SalesPipeline(ctx context.Context, sel ast.Selectio
 			}
 		case "value":
 			out.Values[i] = ec._SalesPipeline_value(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "estimatedCloseDate":
 			out.Values[i] = ec._SalesPipeline_estimatedCloseDate(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "comment":
-			out.Values[i] = ec._SalesPipeline_comment(ctx, field, obj)
+		case "paxName":
+			out.Values[i] = ec._SalesPipeline_paxName(ctx, field, obj)
+		case "picName":
+			out.Values[i] = ec._SalesPipeline_picName(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._SalesPipeline_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

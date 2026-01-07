@@ -18,9 +18,10 @@ type SalesPipelineEdge {
 
 type SalesPipeline {
     id: ID!
-    value: String!
-    estimatedCloseDate: Time!
-    comment: String
+    value: String
+    estimatedCloseDate: Time
+    paxName: String
+    picName: String
     createdAt: Time!
     createdBy: String
     updatedAt: Time
@@ -39,5 +40,5 @@ enum SortOrderSalesPipeline {
 }
 
 input SalesPipelineOrderByInput {
-    endDate: SortOrderSalesPipeline
+    createdAt: SortOrderSalesPipeline
 }
