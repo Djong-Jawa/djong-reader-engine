@@ -21,6 +21,7 @@ gqlgen generate
 '''
 gqlgen generate
 '''
+
 4. follow the instruction from that gqlgen generate command response
 
 # More detail
