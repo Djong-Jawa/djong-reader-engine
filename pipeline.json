@@ -1,5 +1,3 @@
 {
     "appName": "djong-reader-engine",
     "sonarExcludePath": "jenkinsfile/*,ansible/*,lib/*,ns-cicd/*"
-
-}
