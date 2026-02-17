@@ -3,5 +3,4 @@
     "sonarExcludePath": "jenkinsfile/*,ansible/*,lib/*,ns-cicd/*"
 
 
-    
 }
