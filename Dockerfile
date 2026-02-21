@@ -12,11 +12,11 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Copy the Go module files and download dependencies
-COPY --chown=appuser:appgroup go.mod go.sum ./
+COPY --chown=appuser:appgroup --chmod=755 go.mod go.sum ./
 RUN go mod download
 
 # Copy the entire project source code, including .env
-COPY --chown=appuser:appgroup . .
+COPY --chown=appuser:appgroup --chmod=755 . .
 
 # Ensure GOOS and GOARCH are set correctly for Linux
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server ./server.go
@@ -32,8 +32,8 @@ USER appuser
 WORKDIR /home/appuser
 
 # Copy the built binary and .env file from the builder stage with correct ownership and permissions
-COPY --from=builder --chown=appuser:appgroup --chmod=500 /app/server .
-COPY --from=builder --chown=appuser:appgroup --chmod=400 /app/.env .
+COPY --from=builder --chown=appuser:appgroup --chmod=755 /app/server .
+COPY --from=builder --chown=appuser:appgroup --chmod=755 /app/.env .
 
 # Expose the application port (update if necessary)
 EXPOSE 8089
