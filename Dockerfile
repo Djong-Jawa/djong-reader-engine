@@ -40,3 +40,4 @@ EXPOSE 8089
 
 # Run the GraphQL server
 CMD ["./server"]
+
