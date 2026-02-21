@@ -22,11 +22,8 @@ COPY --chown=appuser:appgroup . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server ./server.go
 
 # Use a minimal base image for production
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-
-# Create a non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+FROM alpine:3.23.3
+RUN apk --no-cache add ca-certificates && addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Switch to non-root user before any file operations
 USER appuser
