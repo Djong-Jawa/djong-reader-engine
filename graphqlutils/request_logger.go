@@ -2,22 +2,33 @@ package graphqlutils
 
 import (
 	"context"
-	"github.com/99designs/gqlgen/graphql"
-	"log"
 	"encoding/json"
+	"fmt"
+	"log"
+
+	"github.com/99designs/gqlgen/graphql"
 )
+
+// fetchOperationContext safely retrieves the GraphQL operation context,
+// returning an error instead of panicking when the context is missing.
+func fetchOperationContext(ctx context.Context) (opCtx *graphql.OperationContext, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return graphql.GetOperationContext(ctx), nil
+}
 
 func RequestLogger(ctx context.Context, functionName string) {
 	log.Printf("==== %s ==== ", functionName)
 
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("No operation context found in context")
-		}
-	}()
-
 	// Retreive the GraphQL operation context from the provided context
-	opCtx := graphql.GetOperationContext(ctx)
+	opCtx, err := fetchOperationContext(ctx)
+	if err != nil {
+		log.Printf("No operation context found in context")
+		return
+	}
 	// log the raw query string
 	log.Printf("GraphQL Query : \n%s", opCtx.RawQuery)
 }
