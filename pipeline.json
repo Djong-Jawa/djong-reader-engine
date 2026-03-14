@@ -1,4 +1,8 @@
 {
     "appName": "djong-reader-engine",
-    "sonarExcludePath": "ns-cicd/*"
+    "sonarExcludePath": "ns-cicd/*",
+    "is_unit_test": "yes",
+    "language": "go",
+    "sonarCoverageInclusions": "graphqlutils/**/*.go,graph/model/**/*.go,config/**/*.go",
+    "sonarTestInclusions": "graphqlutils/**/*_test.go,graph/model/**/*_test.go"
 }
