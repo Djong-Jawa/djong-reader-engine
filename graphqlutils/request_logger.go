@@ -10,6 +10,12 @@ import (
 func RequestLogger(ctx context.Context, functionName string) {
 	log.Printf("==== %s ==== ", functionName)
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("No operation context found in context")
+		}
+	}()
+
 	// Retreive the GraphQL operation context from the provided context
 	opCtx := graphql.GetOperationContext(ctx)
 	if opCtx != nil {
@@ -17,7 +23,7 @@ func RequestLogger(ctx context.Context, functionName string) {
 		log.Printf("GraphQL Query : \n%s", opCtx.RawQuery)
 	} else {
 		log.Printf("No operation context found in context")
-	} 
+	}
 }
 
 func ResponseLogger(data interface{}) {
