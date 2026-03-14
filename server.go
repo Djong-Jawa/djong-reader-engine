@@ -62,6 +62,6 @@ func main() {
 
 
 	applicationPORT := os.Getenv("APP_PORT")
-	log.Println("Server is running on port : ", applicationPORT)
+	log.Println("Server runs on port : ", applicationPORT)
 	log.Fatal(http.ListenAndServe(":"+applicationPORT, nil))
 }
