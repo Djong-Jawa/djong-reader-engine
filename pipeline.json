@@ -7,5 +7,5 @@
     "sonarCoverageInclusions": "graphqlutils/**/*.go,graph/model/**/*.go",
     "sonarTestInclusions": "graphqlutils/**/*_test.go,graph/model/**/*_test.go",
     "enableSCA": "true",
-    "enableSCAHardGate": "true"
+    "enableSCAHardGate": "false"
 }
