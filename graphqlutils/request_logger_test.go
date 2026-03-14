@@ -3,19 +3,30 @@ package graphqlutils
 import (
 	"context"
 	"testing"
+
+	"github.com/99designs/gqlgen/graphql"
 )
 
 func TestRequestLogger_NoOperationContext(t *testing.T) {
-	// Test with empty context (no GraphQL operation context attached)
+	// Test with empty context (no GraphQL operation context attached) — exercises the recover() path
 	ctx := context.Background()
 	// Should not panic
 	RequestLogger(ctx, "TestFunction")
 }
 
-func TestRequestLogger_WithFunctionName(t *testing.T) {
-	ctx := context.Background()
-	// Various function name values should not panic
+func TestRequestLogger_WithOperationContext(t *testing.T) {
+	// Inject a real gqlgen operation context — exercises the opCtx != nil branch
+	ctx := graphql.WithOperationContext(context.Background(), &graphql.OperationContext{
+		RawQuery: "{ salesPipelines { id } }",
+	})
+	// Should not panic and should log the raw query
 	RequestLogger(ctx, "Query salesPipelines")
+}
+
+func TestRequestLogger_WithEmptyFunctionName(t *testing.T) {
+	ctx := graphql.WithOperationContext(context.Background(), &graphql.OperationContext{
+		RawQuery: "",
+	})
 	RequestLogger(ctx, "")
 }
 

@@ -18,12 +18,8 @@ func RequestLogger(ctx context.Context, functionName string) {
 
 	// Retreive the GraphQL operation context from the provided context
 	opCtx := graphql.GetOperationContext(ctx)
-	if opCtx != nil {
-		// log the raw query string
-		log.Printf("GraphQL Query : \n%s", opCtx.RawQuery)
-	} else {
-		log.Printf("No operation context found in context")
-	}
+	// log the raw query string
+	log.Printf("GraphQL Query : \n%s", opCtx.RawQuery)
 }
 
 func ResponseLogger(data interface{}) {

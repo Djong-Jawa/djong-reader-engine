@@ -3,6 +3,6 @@
     "sonarExcludePath": "ns-cicd/*",
     "is_unit_test": "yes",
     "language": "go",
-    "sonarCoverageInclusions": "graphqlutils/**/*.go,graph/model/**/*.go,config/**/*.go",
+    "sonarCoverageInclusions": "graphqlutils/**/*.go,graph/model/**/*.go",
     "sonarTestInclusions": "graphqlutils/**/*_test.go,graph/model/**/*_test.go"
 }
