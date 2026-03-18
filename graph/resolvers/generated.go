@@ -46,12 +46,41 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Lead struct {
+		Comment         func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		CreatedBy       func(childComplexity int) int
+		ID              func(childComplexity int) int
+		IsActive        func(childComplexity int) int
+		SalesPipelineID func(childComplexity int) int
+		SpStageID       func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		UpdatedBy       func(childComplexity int) int
+	}
+
+	LeadConnection struct {
+		Edges    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
+	}
+
+	LeadEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	LeadPageInfo struct {
+		EndCursor   func(childComplexity int) int
+		HasNextPage func(childComplexity int) int
+	}
+
 	PageInfo struct {
 		EndCursor   func(childComplexity int) int
 		HasNextPage func(childComplexity int) int
 	}
 
 	Query struct {
+		Lead           func(childComplexity int, id string) int
+		Leads          func(childComplexity int, first *int32, after *int32, orderBy *model.LeadOrderByInput) int
 		SalesPipeline  func(childComplexity int, id string) int
 		SalesPipelines func(childComplexity int, first *int32, after *string, orderBy *model.SalesPipelineOrderByInput) int
 	}
@@ -81,6 +110,8 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
+	Lead(ctx context.Context, id string) (*model.Lead, error)
+	Leads(ctx context.Context, first *int32, after *int32, orderBy *model.LeadOrderByInput) (*model.LeadConnection, error)
 	SalesPipeline(ctx context.Context, id string) (*model.SalesPipeline, error)
 	SalesPipelines(ctx context.Context, first *int32, after *string, orderBy *model.SalesPipelineOrderByInput) (*model.SalesPipelineConnection, error)
 }
@@ -104,6 +135,111 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Lead.comment":
+		if e.complexity.Lead.Comment == nil {
+			break
+		}
+
+		return e.complexity.Lead.Comment(childComplexity), true
+
+	case "Lead.createdAt":
+		if e.complexity.Lead.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Lead.CreatedAt(childComplexity), true
+
+	case "Lead.createdBy":
+		if e.complexity.Lead.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Lead.CreatedBy(childComplexity), true
+
+	case "Lead.id":
+		if e.complexity.Lead.ID == nil {
+			break
+		}
+
+		return e.complexity.Lead.ID(childComplexity), true
+
+	case "Lead.isActive":
+		if e.complexity.Lead.IsActive == nil {
+			break
+		}
+
+		return e.complexity.Lead.IsActive(childComplexity), true
+
+	case "Lead.salesPipelineId":
+		if e.complexity.Lead.SalesPipelineID == nil {
+			break
+		}
+
+		return e.complexity.Lead.SalesPipelineID(childComplexity), true
+
+	case "Lead.spStageId":
+		if e.complexity.Lead.SpStageID == nil {
+			break
+		}
+
+		return e.complexity.Lead.SpStageID(childComplexity), true
+
+	case "Lead.updatedAt":
+		if e.complexity.Lead.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Lead.UpdatedAt(childComplexity), true
+
+	case "Lead.updatedBy":
+		if e.complexity.Lead.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Lead.UpdatedBy(childComplexity), true
+
+	case "LeadConnection.edges":
+		if e.complexity.LeadConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.LeadConnection.Edges(childComplexity), true
+
+	case "LeadConnection.pageInfo":
+		if e.complexity.LeadConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.LeadConnection.PageInfo(childComplexity), true
+
+	case "LeadEdge.cursor":
+		if e.complexity.LeadEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.LeadEdge.Cursor(childComplexity), true
+
+	case "LeadEdge.node":
+		if e.complexity.LeadEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.LeadEdge.Node(childComplexity), true
+
+	case "LeadPageInfo.endCursor":
+		if e.complexity.LeadPageInfo.EndCursor == nil {
+			break
+		}
+
+		return e.complexity.LeadPageInfo.EndCursor(childComplexity), true
+
+	case "LeadPageInfo.hasNextPage":
+		if e.complexity.LeadPageInfo.HasNextPage == nil {
+			break
+		}
+
+		return e.complexity.LeadPageInfo.HasNextPage(childComplexity), true
+
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
 			break
@@ -117,6 +253,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PageInfo.HasNextPage(childComplexity), true
+
+	case "Query.lead":
+		if e.complexity.Query.Lead == nil {
+			break
+		}
+
+		args, err := ec.field_Query_lead_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Lead(childComplexity, args["id"].(string)), true
+
+	case "Query.leads":
+		if e.complexity.Query.Leads == nil {
+			break
+		}
+
+		args, err := ec.field_Query_leads_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Leads(childComplexity, args["first"].(*int32), args["after"].(*int32), args["orderBy"].(*model.LeadOrderByInput)), true
 
 	case "Query.salesPipeline":
 		if e.complexity.Query.SalesPipeline == nil {
@@ -248,6 +408,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputLeadOrderByInput,
 		ec.unmarshalInputSalesPipelineOrderByInput,
 	)
 	first := true
@@ -331,6 +492,46 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../schema/mstlead.graphqls", Input: `type LeadPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type LeadConnection {
+    edges: [LeadEdge!]
+    pageInfo: LeadPageInfo
+}
+
+type LeadEdge{
+    cursor: String!
+    node: Lead!
+}
+
+type Lead {
+    id: ID!
+    spStageId: Int
+    comment: String
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+    salesPipelineId: Int
+}
+
+extend type Query {
+    lead(id: ID!): Lead
+    leads(first: Int, after: Int, orderBy: LeadOrderByInput): LeadConnection!
+}
+
+enum SortOrderLead{
+    ASC
+    DESC
+}
+
+input LeadOrderByInput {
+    createdAt: SortOrderLead
+}`, BuiltIn: false},
 	{Name: "../schema/mstsalespipeline.graphqls", Input: `scalar Time
 
 type PageInfo {
@@ -402,6 +603,88 @@ func (ec *executionContext) field_Query___type_argsName(
 	}
 
 	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_lead_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_lead_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_lead_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_leads_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_leads_argsFirst(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg0
+	arg1, err := ec.field_Query_leads_argsAfter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg1
+	arg2, err := ec.field_Query_leads_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
+	return args, nil
+}
+func (ec *executionContext) field_Query_leads_argsFirst(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+	if tmp, ok := rawArgs["first"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_leads_argsAfter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+	if tmp, ok := rawArgs["after"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_leads_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.LeadOrderByInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalOLeadOrderByInput2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadOrderByInput(ctx, tmp)
+	}
+
+	var zeroVal *model.LeadOrderByInput
 	return zeroVal, nil
 }
 
@@ -587,6 +870,671 @@ func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Lead_id(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_spStageId(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_spStageId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SpStageID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_spStageId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_comment(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_comment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Comment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_comment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_createdBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_createdBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_updatedBy(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_updatedBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_updatedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_isActive(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_isActive(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsActive, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_isActive(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lead_salesPipelineId(ctx context.Context, field graphql.CollectedField, obj *model.Lead) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lead_salesPipelineId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SalesPipelineID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lead_salesPipelineId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lead",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeadConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.LeadConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeadConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.LeadEdge)
+	fc.Result = res
+	return ec.marshalOLeadEdge2ᚕᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadEdgeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeadConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeadConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_LeadEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_LeadEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LeadEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeadConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.LeadConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeadConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.LeadPageInfo)
+	fc.Result = res
+	return ec.marshalOLeadPageInfo2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeadConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeadConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "endCursor":
+				return ec.fieldContext_LeadPageInfo_endCursor(ctx, field)
+			case "hasNextPage":
+				return ec.fieldContext_LeadPageInfo_hasNextPage(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LeadPageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeadEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.LeadEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeadEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeadEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeadEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeadEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.LeadEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeadEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Lead)
+	fc.Result = res
+	return ec.marshalNLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLead(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeadEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeadEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Lead_id(ctx, field)
+			case "spStageId":
+				return ec.fieldContext_Lead_spStageId(ctx, field)
+			case "comment":
+				return ec.fieldContext_Lead_comment(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Lead_createdAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Lead_createdBy(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Lead_updatedAt(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Lead_updatedBy(ctx, field)
+			case "isActive":
+				return ec.fieldContext_Lead_isActive(ctx, field)
+			case "salesPipelineId":
+				return ec.fieldContext_Lead_salesPipelineId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Lead", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeadPageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.LeadPageInfo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeadPageInfo_endCursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndCursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeadPageInfo_endCursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeadPageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LeadPageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *model.LeadPageInfo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LeadPageInfo_hasNextPage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasNextPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LeadPageInfo_hasNextPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LeadPageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_endCursor(ctx, field)
 	if err != nil {
@@ -668,6 +1616,139 @@ func (ec *executionContext) fieldContext_PageInfo_hasNextPage(_ context.Context,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_lead(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_lead(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Lead(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Lead)
+	fc.Result = res
+	return ec.marshalOLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLead(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_lead(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Lead_id(ctx, field)
+			case "spStageId":
+				return ec.fieldContext_Lead_spStageId(ctx, field)
+			case "comment":
+				return ec.fieldContext_Lead_comment(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Lead_createdAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Lead_createdBy(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Lead_updatedAt(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Lead_updatedBy(ctx, field)
+			case "isActive":
+				return ec.fieldContext_Lead_isActive(ctx, field)
+			case "salesPipelineId":
+				return ec.fieldContext_Lead_salesPipelineId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Lead", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_lead_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_leads(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_leads(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Leads(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*int32), fc.Args["orderBy"].(*model.LeadOrderByInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.LeadConnection)
+	fc.Result = res
+	return ec.marshalNLeadConnection2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_leads(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_LeadConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_LeadConnection_pageInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LeadConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_leads_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3512,6 +4593,33 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputLeadOrderByInput(ctx context.Context, obj any) (model.LeadOrderByInput, error) {
+	var it model.LeadOrderByInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"createdAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOSortOrderLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderLead(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSalesPipelineOrderByInput(ctx context.Context, obj any) (model.SalesPipelineOrderByInput, error) {
 	var it model.SalesPipelineOrderByInput
 	asMap := map[string]any{}
@@ -3546,6 +4654,190 @@ func (ec *executionContext) unmarshalInputSalesPipelineOrderByInput(ctx context.
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var leadImplementors = []string{"Lead"}
+
+func (ec *executionContext) _Lead(ctx context.Context, sel ast.SelectionSet, obj *model.Lead) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, leadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Lead")
+		case "id":
+			out.Values[i] = ec._Lead_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "spStageId":
+			out.Values[i] = ec._Lead_spStageId(ctx, field, obj)
+		case "comment":
+			out.Values[i] = ec._Lead_comment(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Lead_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdBy":
+			out.Values[i] = ec._Lead_createdBy(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Lead_updatedAt(ctx, field, obj)
+		case "updatedBy":
+			out.Values[i] = ec._Lead_updatedBy(ctx, field, obj)
+		case "isActive":
+			out.Values[i] = ec._Lead_isActive(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "salesPipelineId":
+			out.Values[i] = ec._Lead_salesPipelineId(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var leadConnectionImplementors = []string{"LeadConnection"}
+
+func (ec *executionContext) _LeadConnection(ctx context.Context, sel ast.SelectionSet, obj *model.LeadConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, leadConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LeadConnection")
+		case "edges":
+			out.Values[i] = ec._LeadConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._LeadConnection_pageInfo(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var leadEdgeImplementors = []string{"LeadEdge"}
+
+func (ec *executionContext) _LeadEdge(ctx context.Context, sel ast.SelectionSet, obj *model.LeadEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, leadEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LeadEdge")
+		case "cursor":
+			out.Values[i] = ec._LeadEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "node":
+			out.Values[i] = ec._LeadEdge_node(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var leadPageInfoImplementors = []string{"LeadPageInfo"}
+
+func (ec *executionContext) _LeadPageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.LeadPageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, leadPageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LeadPageInfo")
+		case "endCursor":
+			out.Values[i] = ec._LeadPageInfo_endCursor(ctx, field, obj)
+		case "hasNextPage":
+			out.Values[i] = ec._LeadPageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var pageInfoImplementors = []string{"PageInfo"}
 
@@ -3607,6 +4899,47 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "lead":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_lead(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "leads":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_leads(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "salesPipeline":
 			field := field
 
@@ -4189,6 +5522,40 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
+func (ec *executionContext) marshalNLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLead(ctx context.Context, sel ast.SelectionSet, v *model.Lead) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Lead(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNLeadConnection2djongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadConnection(ctx context.Context, sel ast.SelectionSet, v model.LeadConnection) graphql.Marshaler {
+	return ec._LeadConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLeadConnection2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadConnection(ctx context.Context, sel ast.SelectionSet, v *model.LeadConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LeadConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNLeadEdge2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadEdge(ctx context.Context, sel ast.SelectionSet, v *model.LeadEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LeadEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNSalesPipeline2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSalesPipeline(ctx context.Context, sel ast.SelectionSet, v *model.SalesPipeline) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4548,6 +5915,75 @@ func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalOLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLead(ctx context.Context, sel ast.SelectionSet, v *model.Lead) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Lead(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOLeadEdge2ᚕᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.LeadEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNLeadEdge2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOLeadOrderByInput2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadOrderByInput(ctx context.Context, v any) (*model.LeadOrderByInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputLeadOrderByInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOLeadPageInfo2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐLeadPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.LeadPageInfo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._LeadPageInfo(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOPageInfo2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -4615,6 +6051,22 @@ func (ec *executionContext) unmarshalOSalesPipelineOrderByInput2ᚖdjongᚑreade
 	}
 	res, err := ec.unmarshalInputSalesPipelineOrderByInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOSortOrderLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderLead(ctx context.Context, v any) (*model.SortOrderLead, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.SortOrderLead)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSortOrderLead2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderLead(ctx context.Context, sel ast.SelectionSet, v *model.SortOrderLead) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOSortOrderSalesPipeline2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderSalesPipeline(ctx context.Context, v any) (*model.SortOrderSalesPipeline, error) {

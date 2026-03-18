@@ -1,0 +1,40 @@
+type LeadPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type LeadConnection {
+    edges: [LeadEdge!]
+    pageInfo: LeadPageInfo
+}
+
+type LeadEdge{
+    cursor: String!
+    node: Lead!
+}
+
+type Lead {
+    id: ID!
+    spStageId: Int
+    comment: String
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+    salesPipelineId: Int
+}
+
+extend type Query {
+    lead(id: ID!): Lead
+    leads(first: Int, after: Int, orderBy: LeadOrderByInput): LeadConnection!
+}
+
+enum SortOrderLead{
+    ASC
+    DESC
+}
+
+input LeadOrderByInput {
+    createdAt: SortOrderLead
+}

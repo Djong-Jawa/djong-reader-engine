@@ -18,7 +18,7 @@ import (
 func (r *queryResolver) SalesPipeline(ctx context.Context, id string) (*model.SalesPipeline, error) {
 	// print log
 
-	graphqlutils.RequestLogger(ctx, "Query Education by id")
+	graphqlutils.RequestLogger(ctx, "Query Sales Pipeline by id")
 
 	var slsPln model.SalesPipeline
 	var createdAt *time.Time
@@ -54,7 +54,7 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
 	if first != nil {
 		limit = *first
 	} else {
-		limit = 10 // default limit
+		limit = 10 // default of limit
 	}
 
 	// Initialize sorting parameters
@@ -137,8 +137,3 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
 
 	return response, nil
 }
-
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
-type queryResolver struct{ *Resolver }

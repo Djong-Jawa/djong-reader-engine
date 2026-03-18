@@ -9,6 +9,37 @@ import (
 	"time"
 )
 
+type Lead struct {
+	ID              string     `json:"id"`
+	SpStageID       *int32     `json:"spStageId,omitempty"`
+	Comment         *string    `json:"comment,omitempty"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	CreatedBy       *string    `json:"createdBy,omitempty"`
+	UpdatedAt       *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy       *string    `json:"updatedBy,omitempty"`
+	IsActive        bool       `json:"isActive"`
+	SalesPipelineID *int32     `json:"salesPipelineId,omitempty"`
+}
+
+type LeadConnection struct {
+	Edges    []*LeadEdge   `json:"edges,omitempty"`
+	PageInfo *LeadPageInfo `json:"pageInfo,omitempty"`
+}
+
+type LeadEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Lead  `json:"node"`
+}
+
+type LeadOrderByInput struct {
+	CreatedAt *SortOrderLead `json:"createdAt,omitempty"`
+}
+
+type LeadPageInfo struct {
+	EndCursor   *string `json:"endCursor,omitempty"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type PageInfo struct {
 	EndCursor   *string `json:"endCursor,omitempty"`
 	HasNextPage bool    `json:"hasNextPage"`
@@ -42,6 +73,47 @@ type SalesPipelineEdge struct {
 
 type SalesPipelineOrderByInput struct {
 	CreatedAt *SortOrderSalesPipeline `json:"createdAt,omitempty"`
+}
+
+type SortOrderLead string
+
+const (
+	SortOrderLeadAsc  SortOrderLead = "ASC"
+	SortOrderLeadDesc SortOrderLead = "DESC"
+)
+
+var AllSortOrderLead = []SortOrderLead{
+	SortOrderLeadAsc,
+	SortOrderLeadDesc,
+}
+
+func (e SortOrderLead) IsValid() bool {
+	switch e {
+	case SortOrderLeadAsc, SortOrderLeadDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderLead) String() string {
+	return string(e)
+}
+
+func (e *SortOrderLead) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderLead(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderLead", str)
+	}
+	return nil
+}
+
+func (e SortOrderLead) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type SortOrderSalesPipeline string
