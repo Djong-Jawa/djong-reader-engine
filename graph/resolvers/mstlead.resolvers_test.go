@@ -11,7 +11,18 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// newLeadScanFunc returns a ScanFunc that populates a Lead row for testing.
+// newLeadScanFunc returns a ScanFunc that fills the nine columns returned by
+// the Leads query:
+//
+//	dest[0] *string      → &ld.ID
+//	dest[1] **int32      → &ld.SpStageID   (nullable, left nil)
+//	dest[2] **string     → &ld.Comment     (nullable, left nil)
+//	dest[3] **time.Time  → &createdAt      (local *time.Time in resolver)
+//	dest[4] **string     → &ld.CreatedBy   (nullable, left nil)
+//	dest[5] **time.Time  → &ld.UpdatedAt   (nullable, left nil)
+//	dest[6] **string     → &ld.UpdatedBy   (nullable, left nil)
+//	dest[7] *bool        → &ld.IsActive
+//	dest[8] **int32      → &ld.SalesPipelineID (nullable, left nil)
 func newLeadScanFunc(id string, isActive bool, createdAt time.Time) func(dest ...any) error {
 	return func(dest ...any) error {
 		*(dest[0].(*string)) = id
@@ -29,19 +40,47 @@ func emptyQueryFunc(_ context.Context, _ string, _ ...any) (pgx.Rows, error) {
 	return &MockRows{}, nil
 }
 
+// ── Query() ───────────────────────────────────────────────────────────────────
+
+// TestResolver_Query directly exercises func (r *Resolver) Query() so that
+// the single-line method is unambiguously recorded as covered.
+func TestResolver_Query(t *testing.T) {
+	r := &Resolver{DB: &MockDBQuerier{}}
+	qr := r.Query()
+	if qr == nil {
+		t.Fatal("Query() must return a non-nil QueryResolver")
+	}
+	// The concrete type returned must embed *Resolver.
+	if _, ok := qr.(*queryResolver); !ok {
+		t.Fatalf("Query() returned %T, want *queryResolver", qr)
+	}
+}
+
 // ── Lead (not-implemented, panics) ────────────────────────────────────────────
 
-func TestLeadResolver_NotImplemented(t *testing.T) {
+// TestLeadResolver_Panics verifies that Lead() panics with the expected message
+// and that the panic value is a non-nil error.
+func TestLeadResolver_Panics(t *testing.T) {
 	r := &Resolver{DB: &MockDBQuerier{}}
 	qr := r.Query()
 
-	defer func() {
-		if rec := recover(); rec == nil {
-			t.Error("expected panic for unimplemented Lead resolver, got none")
-		}
+	var panicVal any
+	func() {
+		defer func() { panicVal = recover() }()
+		qr.Lead(context.Background(), "any-id") //nolint:errcheck
 	}()
 
-	qr.Lead(context.Background(), "any-id") //nolint:errcheck
+	if panicVal == nil {
+		t.Fatal("Lead() must panic — got nil recover value")
+	}
+	panicErr, ok := panicVal.(error)
+	if !ok {
+		t.Fatalf("Lead() panicked with non-error value %T: %v", panicVal, panicVal)
+	}
+	expected := "not implemented: Lead - lead"
+	if panicErr.Error() != expected {
+		t.Errorf("panic message: got %q, want %q", panicErr.Error(), expected)
+	}
 }
 
 // ── Leads ─────────────────────────────────────────────────────────────────────
