@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"djong-reader-engine/config"
 	"djong-reader-engine/graph/model"
 	"djong-reader-engine/graphqlutils"
 	"fmt"
@@ -22,7 +21,7 @@ func (r *queryResolver) SalesPipeline(ctx context.Context, id string) (*model.Sa
 
 	var slsPln model.SalesPipeline
 	var createdAt *time.Time
-	err := config.DB.QueryRow(ctx, `
+	err := r.DB.QueryRow(ctx, `
 		SELECT id, value, estimated_close_date, pax_name, pic_name, created_at, created_by, updated_at, updated_by, is_active
 		FROM mst_sales_pipeline
 		WHERE id=$1
@@ -85,7 +84,7 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
         LIMIT $2
     `, sortField, sortDirection)
 
-	rows, err := config.DB.Query(ctx, query, cursor, limit)
+	rows, err := r.DB.Query(ctx, query, cursor, limit)
 	if err != nil {
 		log.Println("Error fetching sales pipelines: ", err)
 		return nil, err

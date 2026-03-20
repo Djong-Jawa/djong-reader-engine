@@ -44,7 +44,7 @@ func main() {
     // Initialize the GraphQL server
 	srv := handler.NewDefaultServer(
     graph.NewExecutableSchema(
-			graph.Config{Resolvers: &graph.Resolver{}},
+			graph.Config{Resolvers: &graph.Resolver{DB: config.DB}},
 		),
 	)
 

@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"djong-reader-engine/config"
 	"djong-reader-engine/graph/model"
 	"djong-reader-engine/graphqlutils"
 	"fmt"
@@ -59,7 +58,7 @@ func (r *queryResolver) Leads(ctx context.Context, first *int32, after *int32, o
         LIMIT $2
 	`, sortField, sortDirection)
 
-	rows, err := config.DB.Query(ctx, query, cursor, limit)
+	rows, err := r.DB.Query(ctx, query, cursor, limit)
 	if err != nil {
 		log.Println("Error fetching leads: ", err)
 		return nil, err
