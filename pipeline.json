@@ -8,6 +8,5 @@
     "sonarTestInclusions": "graphqlutils/**/*_test.go,graph/model/**/*_test.go",
     "enableSCA": "true",
     "enableSCAHardGate": "false",
-    "needEnvfile": "yes",
-    "envKey": ["APP_PORT","DATABASE_URL","DB_HOST","DB_USER","DB_PASSWORD","DB_NAME","DB_PORT"]
+    "needEnvfile": "yes"
 }
