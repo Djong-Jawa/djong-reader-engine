@@ -1,6 +1,6 @@
 {
     "appName": "djong-reader-engine",
-    "sonarExcludePath": "ns-cicd/*,graph/resolvers/generated.go",
+    "sonarExcludePath": "ns-cicd/*,graph/resolvers/*",
     "is_unit_test": "yes",
     "language": "go",
     "testPackages": "./graphqlutils/... ./graph/model/...",
