@@ -52,7 +52,7 @@ func main() {
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
-	// srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.POST{})
 	// srv.AddTransport(transport.MultipartForm{})
 	srv.AddTransport(transport.Websocket{})
 
