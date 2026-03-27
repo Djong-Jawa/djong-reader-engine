@@ -8,5 +8,5 @@
     "sonarTestInclusions": "graphqlutils/**/*_test.go,graph/model/**/*_test.go",
     "enableSCA": "true",
     "enableSCAHardGate": "false",
-    "needEnvfile": "yes"
+    "needEnvFile": "yes"
 }
