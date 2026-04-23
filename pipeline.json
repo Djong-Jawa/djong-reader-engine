@@ -5,7 +5,7 @@
     "language": "go",
     "testPackages": "./graphqlutils/... ./graph/model/...",
     "sonarCoverageInclusions": "./graphqlutils/**/*.go,./graph/model/**/*.go",
-    "sonarTestInclusions": "./graphqlutils/**/*_test.go,./graph/model/**/*_test.go",
+    "sonarTestInclusions": "**/*_test.go",
     "enableSCA": "true",
     "enableSCAHardGate": "false",
     "needEnvFile": "yes"
