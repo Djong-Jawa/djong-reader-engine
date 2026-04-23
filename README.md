@@ -24,4 +24,7 @@ gqlgen generate
 4. follow the instruction from that gqlgen generate command response
 
 # More detail
-If you would like to become as contributor, then visit our website https://djongjawa.com 
+If you would like to become as contributor, then visit our website https://djongjawa.com
+
+# Deployment
+This frontend will be deployed in path https://djongjawa.com/djong-pinisi
