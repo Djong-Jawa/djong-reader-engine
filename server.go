@@ -5,7 +5,9 @@ import (
 	"net/http"
 
 	"djong-reader-engine/config"
+	"djong-reader-engine/rest/controllers"
 	"djong-reader-engine/graph/resolvers"
+	"djong-reader-engine/rest/services"
 
 	"github.com/joho/godotenv"
 	"os"
@@ -58,6 +60,14 @@ func main() {
 
 	http.Handle("/query", srv)
 	http.Handle("/", playground.Handler("GraphQL Playground", "/query"))
+
+	// REST API routes
+	// Initialize service and controller
+	salesPipelineService := services.NewSalesPipelineService(config.DB)
+	salesPipelineController := controllers.NewSalesPipelineController(salesPipelineService)
+	
+	// Register REST API endpoint
+	http.HandleFunc("/api/mst/sales-pipeline", salesPipelineController.HandleSalesPipeline)
 
 
 
