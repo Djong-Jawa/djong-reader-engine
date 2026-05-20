@@ -19,5 +19,6 @@ type DBQuerier interface {
 
 // Resolver is the root GraphQL resolver.
 type Resolver struct {
-	DB DBQuerier
+	DB        DBQuerier
+	DBJukung  DBQuerier
 }

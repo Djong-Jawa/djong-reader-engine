@@ -40,13 +40,14 @@ func main() {
 	
 	// connect to db
 	config.ConnectDB()
+	config.ConnectDBJukung()
 	
 	// http.Handle("/query", handler.GraphQL(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}})))
 	// Set up GraphQL server
     // Initialize the GraphQL server
 	srv := handler.NewDefaultServer(
     graph.NewExecutableSchema(
-			graph.Config{Resolvers: &graph.Resolver{DB: config.DB}},
+			graph.Config{Resolvers: &graph.Resolver{DB: config.DB, DBJukung: config.DBJukung}},
 		),
 	)
 

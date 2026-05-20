@@ -1,0 +1,42 @@
+type PricingTierPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type PricingTierConnection {
+    edges: [PricingTierEdge!]
+    pageInfo: PricingTierPageInfo
+}
+
+type PricingTierEdge {
+    cursor: String!
+    node: PricingTier!
+}
+
+type PricingTier {
+    id: ID!
+    productId: Int
+    prValidMin: Int
+    prValidMax: Int
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+    rate: Float
+    currencyId: Int
+}
+
+extend type Query {
+    jukungPricingTier(id: ID!): PricingTier
+    jukungPricingTiers(first: Int, after: String, orderBy: PricingTierOrderByInput): PricingTierConnection!
+}
+
+enum SortOrderPricingTier {
+    ASC
+    DESC
+}
+
+input PricingTierOrderByInput {
+    createdAt: SortOrderPricingTier
+}

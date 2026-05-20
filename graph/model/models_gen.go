@@ -45,6 +45,39 @@ type PageInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 }
 
+type PricingTier struct {
+	ID         string     `json:"id"`
+	ProductID  *int32     `json:"productId,omitempty"`
+	PrValidMin *int32     `json:"prValidMin,omitempty"`
+	PrValidMax *int32     `json:"prValidMax,omitempty"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	CreatedBy  *string    `json:"createdBy,omitempty"`
+	UpdatedAt  *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy  *string    `json:"updatedBy,omitempty"`
+	IsActive   bool       `json:"isActive"`
+	Rate       *float64   `json:"rate,omitempty"`
+	CurrencyID *int32     `json:"currencyId,omitempty"`
+}
+
+type PricingTierConnection struct {
+	Edges    []*PricingTierEdge   `json:"edges,omitempty"`
+	PageInfo *PricingTierPageInfo `json:"pageInfo,omitempty"`
+}
+
+type PricingTierEdge struct {
+	Cursor string       `json:"cursor"`
+	Node   *PricingTier `json:"node"`
+}
+
+type PricingTierOrderByInput struct {
+	CreatedAt *SortOrderPricingTier `json:"createdAt,omitempty"`
+}
+
+type PricingTierPageInfo struct {
+	EndCursor   *string `json:"endCursor,omitempty"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type Query struct {
 }
 
@@ -113,6 +146,47 @@ func (e *SortOrderLead) UnmarshalGQL(v any) error {
 }
 
 func (e SortOrderLead) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SortOrderPricingTier string
+
+const (
+	SortOrderPricingTierAsc  SortOrderPricingTier = "ASC"
+	SortOrderPricingTierDesc SortOrderPricingTier = "DESC"
+)
+
+var AllSortOrderPricingTier = []SortOrderPricingTier{
+	SortOrderPricingTierAsc,
+	SortOrderPricingTierDesc,
+}
+
+func (e SortOrderPricingTier) IsValid() bool {
+	switch e {
+	case SortOrderPricingTierAsc, SortOrderPricingTierDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderPricingTier) String() string {
+	return string(e)
+}
+
+func (e *SortOrderPricingTier) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderPricingTier(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderPricingTier", str)
+	}
+	return nil
+}
+
+func (e SortOrderPricingTier) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
