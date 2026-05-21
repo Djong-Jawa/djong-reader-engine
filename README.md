@@ -29,3 +29,5 @@ If you would like to become as contributor, then visit our website https://djong
 # Deployment
 This frontend will be deployed in path https://djongjawa.com/djong-pinisi
 Backend using https://djongjawa.com/djong-gateway , please use the authentication. That is an api gateway using spring cloud.
+
+
