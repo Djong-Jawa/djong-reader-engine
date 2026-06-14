@@ -1,4 +1,9 @@
-.PHONY: test coverage coverage-report lint
+.PHONY: test coverage coverage-report lint generate
+
+# Generate GraphQL resolvers for djong-jukung and djong-phinisi schemas
+generate:
+	go run github.com/99designs/gqlgen generate
+	@./scripts/organize-resolvers.sh
 
 # Run all tests
 test:

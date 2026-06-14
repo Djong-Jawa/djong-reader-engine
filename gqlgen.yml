@@ -1,7 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - graph/schema/*.graphqls
-  - graph/schema/jukung/*.graphqls
+  - graph/schema/**/*.graphqls
 
 # Where should the generated server code go?
 exec:
@@ -38,7 +37,7 @@ model:
 # Where should the resolver implementations go?
 resolver:
   package: graph
-  layout: follow-schema # Only other option is "single-file."
+  layout: follow-schema
 
   # Only for single-file layout:
   # filename: graph/resolver.go
@@ -52,7 +51,7 @@ resolver:
   # Optional: Pass in a path to a new gotpl template to use for generating resolvers
   # resolver_template: [your/path/resolver.gotpl]
   # Optional: turn on to avoid rewriting existing resolver(s) when generating
-  # preserve_resolver: false
+  preserve_resolver: true
 
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
 # struct_tag: json

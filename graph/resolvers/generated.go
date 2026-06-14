@@ -169,14 +169,14 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
+	JukungPricingTier(ctx context.Context, id string) (*model.PricingTier, error)
+	JukungPricingTiers(ctx context.Context, first *int32, after *string, orderBy *model.PricingTierOrderByInput) (*model.PricingTierConnection, error)
 	MstBooking(ctx context.Context, id string) (*model.Booking, error)
 	MstBookings(ctx context.Context, first *int32, after *string, orderBy *model.BookingOrderByInput) (*model.BookingConnection, error)
 	Lead(ctx context.Context, id string) (*model.Lead, error)
 	Leads(ctx context.Context, first *int32, after *int32, orderBy *model.LeadOrderByInput) (*model.LeadConnection, error)
 	SalesPipeline(ctx context.Context, id string) (*model.SalesPipeline, error)
 	SalesPipelines(ctx context.Context, first *int32, after *string, orderBy *model.SalesPipelineOrderByInput) (*model.SalesPipelineConnection, error)
-	JukungPricingTier(ctx context.Context, id string) (*model.PricingTier, error)
-	JukungPricingTiers(ctx context.Context, first *int32, after *string, orderBy *model.PricingTierOrderByInput) (*model.PricingTierConnection, error)
 }
 
 type executableSchema struct {
@@ -822,7 +822,50 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/mstbooking.graphqls", Input: `type BookingPageInfo {
+	{Name: "../schema/djong-jukung/mstpricingtiers.graphqls", Input: `type PricingTierPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type PricingTierConnection {
+    edges: [PricingTierEdge!]
+    pageInfo: PricingTierPageInfo
+}
+
+type PricingTierEdge {
+    cursor: String!
+    node: PricingTier!
+}
+
+type PricingTier {
+    id: ID!
+    productId: Int
+    prValidMin: Int
+    prValidMax: Int
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+    rate: Float
+    currencyId: Int
+}
+
+extend type Query {
+    jukungPricingTier(id: ID!): PricingTier
+    jukungPricingTiers(first: Int, after: String, orderBy: PricingTierOrderByInput): PricingTierConnection!
+}
+
+enum SortOrderPricingTier {
+    ASC
+    DESC
+}
+
+input PricingTierOrderByInput {
+    createdAt: SortOrderPricingTier
+}
+`, BuiltIn: false},
+	{Name: "../schema/djong-phinisi/mstbooking.graphqls", Input: `type BookingPageInfo {
     endCursor: String 
     hasNextPage: Boolean!
 }
@@ -862,7 +905,7 @@ input BookingOrderByInput {
     createdAt: SortOrderBooking
 }
 `, BuiltIn: false},
-	{Name: "../schema/mstlead.graphqls", Input: `type LeadPageInfo {
+	{Name: "../schema/djong-phinisi/mstlead.graphqls", Input: `type LeadPageInfo {
     endCursor: String 
     hasNextPage: Boolean!
 }
@@ -902,7 +945,7 @@ enum SortOrderLead{
 input LeadOrderByInput {
     createdAt: SortOrderLead
 }`, BuiltIn: false},
-	{Name: "../schema/mstsalespipeline.graphqls", Input: `scalar Time
+	{Name: "../schema/djong-phinisi/mstsalespipeline.graphqls", Input: `scalar Time
 
 type PageInfo {
     endCursor: String
@@ -946,49 +989,6 @@ enum SortOrderSalesPipeline {
 input SalesPipelineOrderByInput {
     createdAt: SortOrderSalesPipeline
 }`, BuiltIn: false},
-	{Name: "../schema/jukung/mstpricingtiers.graphqls", Input: `type PricingTierPageInfo {
-    endCursor: String 
-    hasNextPage: Boolean!
-}
-
-type PricingTierConnection {
-    edges: [PricingTierEdge!]
-    pageInfo: PricingTierPageInfo
-}
-
-type PricingTierEdge {
-    cursor: String!
-    node: PricingTier!
-}
-
-type PricingTier {
-    id: ID!
-    productId: Int
-    prValidMin: Int
-    prValidMax: Int
-    createdAt: Time!
-    createdBy: String
-    updatedAt: Time
-    updatedBy: String
-    isActive: Boolean!
-    rate: Float
-    currencyId: Int
-}
-
-extend type Query {
-    jukungPricingTier(id: ID!): PricingTier
-    jukungPricingTiers(first: Int, after: String, orderBy: PricingTierOrderByInput): PricingTierConnection!
-}
-
-enum SortOrderPricingTier {
-    ASC
-    DESC
-}
-
-input PricingTierOrderByInput {
-    createdAt: SortOrderPricingTier
-}
-`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -3570,6 +3570,143 @@ func (ec *executionContext) fieldContext_PricingTierPageInfo_hasNextPage(_ conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_jukungPricingTier(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_jukungPricingTier(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().JukungPricingTier(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PricingTier)
+	fc.Result = res
+	return ec.marshalOPricingTier2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐPricingTier(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_jukungPricingTier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_PricingTier_id(ctx, field)
+			case "productId":
+				return ec.fieldContext_PricingTier_productId(ctx, field)
+			case "prValidMin":
+				return ec.fieldContext_PricingTier_prValidMin(ctx, field)
+			case "prValidMax":
+				return ec.fieldContext_PricingTier_prValidMax(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_PricingTier_createdAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_PricingTier_createdBy(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_PricingTier_updatedAt(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_PricingTier_updatedBy(ctx, field)
+			case "isActive":
+				return ec.fieldContext_PricingTier_isActive(ctx, field)
+			case "rate":
+				return ec.fieldContext_PricingTier_rate(ctx, field)
+			case "currencyId":
+				return ec.fieldContext_PricingTier_currencyId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PricingTier", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_jukungPricingTier_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_jukungPricingTiers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_jukungPricingTiers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().JukungPricingTiers(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string), fc.Args["orderBy"].(*model.PricingTierOrderByInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PricingTierConnection)
+	fc.Result = res
+	return ec.marshalNPricingTierConnection2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐPricingTierConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_jukungPricingTiers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_PricingTierConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_PricingTierConnection_pageInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PricingTierConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_jukungPricingTiers_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_mstBooking(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_mstBooking(ctx, field)
 	if err != nil {
@@ -3963,143 +4100,6 @@ func (ec *executionContext) fieldContext_Query_salesPipelines(ctx context.Contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_salesPipelines_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_jukungPricingTier(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_jukungPricingTier(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().JukungPricingTier(rctx, fc.Args["id"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.PricingTier)
-	fc.Result = res
-	return ec.marshalOPricingTier2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐPricingTier(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_jukungPricingTier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_PricingTier_id(ctx, field)
-			case "productId":
-				return ec.fieldContext_PricingTier_productId(ctx, field)
-			case "prValidMin":
-				return ec.fieldContext_PricingTier_prValidMin(ctx, field)
-			case "prValidMax":
-				return ec.fieldContext_PricingTier_prValidMax(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PricingTier_createdAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_PricingTier_createdBy(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_PricingTier_updatedAt(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_PricingTier_updatedBy(ctx, field)
-			case "isActive":
-				return ec.fieldContext_PricingTier_isActive(ctx, field)
-			case "rate":
-				return ec.fieldContext_PricingTier_rate(ctx, field)
-			case "currencyId":
-				return ec.fieldContext_PricingTier_currencyId(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PricingTier", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_jukungPricingTier_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_jukungPricingTiers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_jukungPricingTiers(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().JukungPricingTiers(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string), fc.Args["orderBy"].(*model.PricingTierOrderByInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.PricingTierConnection)
-	fc.Result = res
-	return ec.marshalNPricingTierConnection2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐPricingTierConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_jukungPricingTiers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_PricingTierConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_PricingTierConnection_pageInfo(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PricingTierConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_jukungPricingTiers_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -7541,6 +7541,47 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "jukungPricingTier":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_jukungPricingTier(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "jukungPricingTiers":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_jukungPricingTiers(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "mstBooking":
 			field := field
 
@@ -7652,47 +7693,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_salesPipelines(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "jukungPricingTier":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_jukungPricingTier(ctx, field)
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "jukungPricingTiers":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_jukungPricingTiers(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

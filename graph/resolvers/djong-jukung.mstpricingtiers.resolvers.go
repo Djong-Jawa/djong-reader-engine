@@ -7,7 +7,9 @@ package graph
 import (
 	"context"
 	"djong-reader-engine/graph/model"
+	"djong-reader-engine/graphqlutils"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -116,8 +118,3 @@ func (r *queryResolver) JukungPricingTiers(ctx context.Context, first *int32, af
 
 	return response, nil
 }
-
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
-type queryResolver struct{ *Resolver }
