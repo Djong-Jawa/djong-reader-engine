@@ -111,8 +111,3 @@ func (r *queryResolver) Leads(ctx context.Context, first *int32, after *int32, o
 
 	return response, nil
 }
-
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
-
-type queryResolver struct{ *Resolver }

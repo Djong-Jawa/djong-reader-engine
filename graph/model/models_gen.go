@@ -9,6 +9,36 @@ import (
 	"time"
 )
 
+type Booking struct {
+	ID          string     `json:"id"`
+	BookingCode *string    `json:"bookingCode,omitempty"`
+	BookingDate *time.Time `json:"bookingDate,omitempty"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	CreatedBy   *string    `json:"createdBy,omitempty"`
+	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy   *string    `json:"updatedBy,omitempty"`
+	IsActive    bool       `json:"isActive"`
+}
+
+type BookingConnection struct {
+	Edges    []*BookingEdge   `json:"edges,omitempty"`
+	PageInfo *BookingPageInfo `json:"pageInfo,omitempty"`
+}
+
+type BookingEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *Booking `json:"node"`
+}
+
+type BookingOrderByInput struct {
+	CreatedAt *SortOrderBooking `json:"createdAt,omitempty"`
+}
+
+type BookingPageInfo struct {
+	EndCursor   *string `json:"endCursor,omitempty"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type Lead struct {
 	ID              string     `json:"id"`
 	SpStageID       *int32     `json:"spStageId,omitempty"`
@@ -106,6 +136,47 @@ type SalesPipelineEdge struct {
 
 type SalesPipelineOrderByInput struct {
 	CreatedAt *SortOrderSalesPipeline `json:"createdAt,omitempty"`
+}
+
+type SortOrderBooking string
+
+const (
+	SortOrderBookingAsc  SortOrderBooking = "ASC"
+	SortOrderBookingDesc SortOrderBooking = "DESC"
+)
+
+var AllSortOrderBooking = []SortOrderBooking{
+	SortOrderBookingAsc,
+	SortOrderBookingDesc,
+}
+
+func (e SortOrderBooking) IsValid() bool {
+	switch e {
+	case SortOrderBookingAsc, SortOrderBookingDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderBooking) String() string {
+	return string(e)
+}
+
+func (e *SortOrderBooking) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderBooking(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderBooking", str)
+	}
+	return nil
+}
+
+func (e SortOrderBooking) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type SortOrderLead string

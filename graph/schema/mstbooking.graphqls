@@ -1,0 +1,39 @@
+type BookingPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type BookingConnection {
+    edges: [BookingEdge!]
+    pageInfo: BookingPageInfo
+}
+
+type BookingEdge {
+    cursor: String!
+    node: Booking!
+}
+
+type Booking {
+    id: ID!
+    bookingCode: String
+    bookingDate: Time
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+extend type Query {
+    mstBooking(id: ID!): Booking
+    mstBookings(first: Int, after: String, orderBy: BookingOrderByInput): BookingConnection!
+}
+
+enum SortOrderBooking {
+    ASC
+    DESC
+}
+
+input BookingOrderByInput {
+    createdAt: SortOrderBooking
+}
