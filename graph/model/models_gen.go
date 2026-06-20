@@ -108,6 +108,37 @@ type PricingTierPageInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 }
 
+type Product struct {
+	ID            string     `json:"id"`
+	DestinationID *int32     `json:"destinationId,omitempty"`
+	Description   *string    `json:"description,omitempty"`
+	TotalDuration *int32     `json:"totalDuration,omitempty"`
+	CreatedBy     *string    `json:"createdBy,omitempty"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedBy     *string    `json:"updatedBy,omitempty"`
+	UpdatedAt     *time.Time `json:"updatedAt,omitempty"`
+	IsActive      bool       `json:"isActive"`
+}
+
+type ProductConnection struct {
+	Edges    []*ProductEdge   `json:"edges,omitempty"`
+	PageInfo *ProductPageInfo `json:"pageInfo,omitempty"`
+}
+
+type ProductEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *Product `json:"node"`
+}
+
+type ProductOrderByInput struct {
+	CreatedAt *SortOrderProduct `json:"createdAt,omitempty"`
+}
+
+type ProductPageInfo struct {
+	EndCursor   *string `json:"endCursor,omitempty"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type Query struct {
 }
 
@@ -258,6 +289,47 @@ func (e *SortOrderPricingTier) UnmarshalGQL(v any) error {
 }
 
 func (e SortOrderPricingTier) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SortOrderProduct string
+
+const (
+	SortOrderProductAsc  SortOrderProduct = "ASC"
+	SortOrderProductDesc SortOrderProduct = "DESC"
+)
+
+var AllSortOrderProduct = []SortOrderProduct{
+	SortOrderProductAsc,
+	SortOrderProductDesc,
+}
+
+func (e SortOrderProduct) IsValid() bool {
+	switch e {
+	case SortOrderProductAsc, SortOrderProductDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderProduct) String() string {
+	return string(e)
+}
+
+func (e *SortOrderProduct) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderProduct(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderProduct", str)
+	}
+	return nil
+}
+
+func (e SortOrderProduct) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

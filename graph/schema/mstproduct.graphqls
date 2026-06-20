@@ -1,0 +1,39 @@
+type ProductPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type ProductConnection {
+    edges: [ProductEdge!]
+    pageInfo: ProductPageInfo
+}
+
+type ProductEdge {
+    cursor: String!
+    node: Product!
+}
+
+type Product {
+    id: ID!
+    destinationId: Int
+    description: String
+    totalDuration: Int
+    createdBy: String
+    createdAt: Time!
+    updatedBy: String
+    updatedAt: Time
+    isActive: Boolean!
+}
+
+extend type Query {
+    mstProduct(first: Int, after: String, orderBy: ProductOrderByInput): ProductConnection!
+}
+
+enum SortOrderProduct {
+    ASC
+    DESC
+}
+
+input ProductOrderByInput {
+    createdAt: SortOrderProduct
+}
