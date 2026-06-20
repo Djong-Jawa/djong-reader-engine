@@ -161,15 +161,43 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		JukungPricingTier  func(childComplexity int, id string) int
-		JukungPricingTiers func(childComplexity int, first *int32, after *string, orderBy *model.PricingTierOrderByInput) int
-		Lead               func(childComplexity int, id string) int
-		Leads              func(childComplexity int, first *int32, after *int32, orderBy *model.LeadOrderByInput) int
-		MstBooking         func(childComplexity int, id string) int
-		MstBookings        func(childComplexity int, first *int32, after *string, orderBy *model.BookingOrderByInput) int
-		MstProduct         func(childComplexity int, first *int32, after *string, orderBy *model.ProductOrderByInput) int
-		SalesPipeline      func(childComplexity int, id string) int
-		SalesPipelines     func(childComplexity int, first *int32, after *string, orderBy *model.SalesPipelineOrderByInput) int
+		JukungPricingTier     func(childComplexity int, id string) int
+		JukungPricingTiers    func(childComplexity int, first *int32, after *string, orderBy *model.PricingTierOrderByInput) int
+		JukungRefDestination  func(childComplexity int, id string) int
+		JukungRefDestinations func(childComplexity int, first *int32, after *string, orderBy *model.RefDestinationOrderByInput) int
+		Lead                  func(childComplexity int, id string) int
+		Leads                 func(childComplexity int, first *int32, after *int32, orderBy *model.LeadOrderByInput) int
+		MstBooking            func(childComplexity int, id string) int
+		MstBookings           func(childComplexity int, first *int32, after *string, orderBy *model.BookingOrderByInput) int
+		MstProduct            func(childComplexity int, first *int32, after *string, orderBy *model.ProductOrderByInput) int
+		SalesPipeline         func(childComplexity int, id string) int
+		SalesPipelines        func(childComplexity int, first *int32, after *string, orderBy *model.SalesPipelineOrderByInput) int
+	}
+
+	RefDestination struct {
+		CreatedAt       func(childComplexity int) int
+		CreatedBy       func(childComplexity int) int
+		DestinationName func(childComplexity int) int
+		ID              func(childComplexity int) int
+		IsActive        func(childComplexity int) int
+		IsCombination   func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		UpdatedBy       func(childComplexity int) int
+	}
+
+	RefDestinationConnection struct {
+		Edges    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
+	}
+
+	RefDestinationEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	RefDestinationPageInfo struct {
+		EndCursor   func(childComplexity int) int
+		HasNextPage func(childComplexity int) int
 	}
 
 	SalesPipeline struct {
@@ -206,6 +234,8 @@ type QueryResolver interface {
 	SalesPipelines(ctx context.Context, first *int32, after *string, orderBy *model.SalesPipelineOrderByInput) (*model.SalesPipelineConnection, error)
 	JukungPricingTier(ctx context.Context, id string) (*model.PricingTier, error)
 	JukungPricingTiers(ctx context.Context, first *int32, after *string, orderBy *model.PricingTierOrderByInput) (*model.PricingTierConnection, error)
+	JukungRefDestination(ctx context.Context, id string) (*model.RefDestination, error)
+	JukungRefDestinations(ctx context.Context, first *int32, after *string, orderBy *model.RefDestinationOrderByInput) (*model.RefDestinationConnection, error)
 }
 
 type executableSchema struct {
@@ -692,6 +722,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.JukungPricingTiers(childComplexity, args["first"].(*int32), args["after"].(*string), args["orderBy"].(*model.PricingTierOrderByInput)), true
 
+	case "Query.jukungRefDestination":
+		if e.complexity.Query.JukungRefDestination == nil {
+			break
+		}
+
+		args, err := ec.field_Query_jukungRefDestination_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.JukungRefDestination(childComplexity, args["id"].(string)), true
+
+	case "Query.jukungRefDestinations":
+		if e.complexity.Query.JukungRefDestinations == nil {
+			break
+		}
+
+		args, err := ec.field_Query_jukungRefDestinations_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.JukungRefDestinations(childComplexity, args["first"].(*int32), args["after"].(*string), args["orderBy"].(*model.RefDestinationOrderByInput)), true
+
 	case "Query.lead":
 		if e.complexity.Query.Lead == nil {
 			break
@@ -775,6 +829,104 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.SalesPipelines(childComplexity, args["first"].(*int32), args["after"].(*string), args["orderBy"].(*model.SalesPipelineOrderByInput)), true
+
+	case "RefDestination.createdAt":
+		if e.complexity.RefDestination.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.CreatedAt(childComplexity), true
+
+	case "RefDestination.createdBy":
+		if e.complexity.RefDestination.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.CreatedBy(childComplexity), true
+
+	case "RefDestination.destinationName":
+		if e.complexity.RefDestination.DestinationName == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.DestinationName(childComplexity), true
+
+	case "RefDestination.id":
+		if e.complexity.RefDestination.ID == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.ID(childComplexity), true
+
+	case "RefDestination.isActive":
+		if e.complexity.RefDestination.IsActive == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.IsActive(childComplexity), true
+
+	case "RefDestination.isCombination":
+		if e.complexity.RefDestination.IsCombination == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.IsCombination(childComplexity), true
+
+	case "RefDestination.updatedAt":
+		if e.complexity.RefDestination.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.UpdatedAt(childComplexity), true
+
+	case "RefDestination.updatedBy":
+		if e.complexity.RefDestination.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.RefDestination.UpdatedBy(childComplexity), true
+
+	case "RefDestinationConnection.edges":
+		if e.complexity.RefDestinationConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.RefDestinationConnection.Edges(childComplexity), true
+
+	case "RefDestinationConnection.pageInfo":
+		if e.complexity.RefDestinationConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.RefDestinationConnection.PageInfo(childComplexity), true
+
+	case "RefDestinationEdge.cursor":
+		if e.complexity.RefDestinationEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.RefDestinationEdge.Cursor(childComplexity), true
+
+	case "RefDestinationEdge.node":
+		if e.complexity.RefDestinationEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.RefDestinationEdge.Node(childComplexity), true
+
+	case "RefDestinationPageInfo.endCursor":
+		if e.complexity.RefDestinationPageInfo.EndCursor == nil {
+			break
+		}
+
+		return e.complexity.RefDestinationPageInfo.EndCursor(childComplexity), true
+
+	case "RefDestinationPageInfo.hasNextPage":
+		if e.complexity.RefDestinationPageInfo.HasNextPage == nil {
+			break
+		}
+
+		return e.complexity.RefDestinationPageInfo.HasNextPage(childComplexity), true
 
 	case "SalesPipeline.createdAt":
 		if e.complexity.SalesPipeline.CreatedAt == nil {
@@ -886,6 +1038,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputLeadOrderByInput,
 		ec.unmarshalInputPricingTierOrderByInput,
 		ec.unmarshalInputProductOrderByInput,
+		ec.unmarshalInputRefDestinationOrderByInput,
 		ec.unmarshalInputSalesPipelineOrderByInput,
 	)
 	first := true
@@ -1176,6 +1329,46 @@ input PricingTierOrderByInput {
     createdAt: SortOrderPricingTier
 }
 `, BuiltIn: false},
+	{Name: "../schema/jukung/refdestination.graphqls", Input: `type RefDestinationPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type RefDestinationConnection {
+    edges: [RefDestinationEdge!]
+    pageInfo: RefDestinationPageInfo
+}
+
+type RefDestinationEdge {
+    cursor: String!
+    node: RefDestination!
+}
+
+type RefDestination {
+    id: ID!
+    destinationName: String
+    isCombination: Boolean
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+extend type Query {
+    jukungRefDestination(id: ID!): RefDestination
+    jukungRefDestinations(first: Int, after: String, orderBy: RefDestinationOrderByInput): RefDestinationConnection!
+}
+
+enum SortOrderRefDestination {
+    ASC
+    DESC
+}
+
+input RefDestinationOrderByInput {
+    createdAt: SortOrderRefDestination
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -1285,6 +1478,88 @@ func (ec *executionContext) field_Query_jukungPricingTiers_argsOrderBy(
 	}
 
 	var zeroVal *model.PricingTierOrderByInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_jukungRefDestination_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_jukungRefDestination_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_jukungRefDestination_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_jukungRefDestinations_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_jukungRefDestinations_argsFirst(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg0
+	arg1, err := ec.field_Query_jukungRefDestinations_argsAfter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg1
+	arg2, err := ec.field_Query_jukungRefDestinations_argsOrderBy(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["orderBy"] = arg2
+	return args, nil
+}
+func (ec *executionContext) field_Query_jukungRefDestinations_argsFirst(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+	if tmp, ok := rawArgs["first"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_jukungRefDestinations_argsAfter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+	if tmp, ok := rawArgs["after"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_jukungRefDestinations_argsOrderBy(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.RefDestinationOrderByInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		return ec.unmarshalORefDestinationOrderByInput2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationOrderByInput(ctx, tmp)
+	}
+
+	var zeroVal *model.RefDestinationOrderByInput
 	return zeroVal, nil
 }
 
@@ -5078,6 +5353,137 @@ func (ec *executionContext) fieldContext_Query_jukungPricingTiers(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_jukungRefDestination(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_jukungRefDestination(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().JukungRefDestination(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.RefDestination)
+	fc.Result = res
+	return ec.marshalORefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestination(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_jukungRefDestination(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_RefDestination_id(ctx, field)
+			case "destinationName":
+				return ec.fieldContext_RefDestination_destinationName(ctx, field)
+			case "isCombination":
+				return ec.fieldContext_RefDestination_isCombination(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_RefDestination_createdAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_RefDestination_createdBy(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_RefDestination_updatedAt(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_RefDestination_updatedBy(ctx, field)
+			case "isActive":
+				return ec.fieldContext_RefDestination_isActive(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RefDestination", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_jukungRefDestination_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_jukungRefDestinations(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_jukungRefDestinations(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().JukungRefDestinations(rctx, fc.Args["first"].(*int32), fc.Args["after"].(*string), fc.Args["orderBy"].(*model.RefDestinationOrderByInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RefDestinationConnection)
+	fc.Result = res
+	return ec.marshalNRefDestinationConnection2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_jukungRefDestinations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_RefDestinationConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_RefDestinationConnection_pageInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RefDestinationConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_jukungRefDestinations_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -5204,6 +5610,628 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_id(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_destinationName(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_destinationName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DestinationName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_destinationName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_isCombination(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_isCombination(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsCombination, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_isCombination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_createdBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_createdBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_updatedBy(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_updatedBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_updatedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestination_isActive(ctx context.Context, field graphql.CollectedField, obj *model.RefDestination) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestination_isActive(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsActive, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestination_isActive(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestination",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestinationConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.RefDestinationConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestinationConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RefDestinationEdge)
+	fc.Result = res
+	return ec.marshalORefDestinationEdge2ᚕᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationEdgeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestinationConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestinationConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_RefDestinationEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_RefDestinationEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RefDestinationEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestinationConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.RefDestinationConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestinationConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.RefDestinationPageInfo)
+	fc.Result = res
+	return ec.marshalORefDestinationPageInfo2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestinationConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestinationConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "endCursor":
+				return ec.fieldContext_RefDestinationPageInfo_endCursor(ctx, field)
+			case "hasNextPage":
+				return ec.fieldContext_RefDestinationPageInfo_hasNextPage(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RefDestinationPageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestinationEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.RefDestinationEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestinationEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestinationEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestinationEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestinationEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.RefDestinationEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestinationEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RefDestination)
+	fc.Result = res
+	return ec.marshalNRefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestination(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestinationEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestinationEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_RefDestination_id(ctx, field)
+			case "destinationName":
+				return ec.fieldContext_RefDestination_destinationName(ctx, field)
+			case "isCombination":
+				return ec.fieldContext_RefDestination_isCombination(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_RefDestination_createdAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_RefDestination_createdBy(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_RefDestination_updatedAt(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_RefDestination_updatedBy(ctx, field)
+			case "isActive":
+				return ec.fieldContext_RefDestination_isActive(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RefDestination", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestinationPageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.RefDestinationPageInfo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestinationPageInfo_endCursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndCursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestinationPageInfo_endCursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestinationPageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RefDestinationPageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *model.RefDestinationPageInfo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RefDestinationPageInfo_hasNextPage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasNextPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RefDestinationPageInfo_hasNextPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RefDestinationPageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7891,6 +8919,33 @@ func (ec *executionContext) unmarshalInputProductOrderByInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputRefDestinationOrderByInput(ctx context.Context, obj any) (model.RefDestinationOrderByInput, error) {
+	var it model.RefDestinationOrderByInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"createdAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOSortOrderRefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderRefDestination(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSalesPipelineOrderByInput(ctx context.Context, obj any) (model.SalesPipelineOrderByInput, error) {
 	var it model.SalesPipelineOrderByInput
 	asMap := map[string]any{}
@@ -8910,6 +9965,47 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "jukungRefDestination":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_jukungRefDestination(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "jukungRefDestinations":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_jukungRefDestinations(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -8918,6 +10014,188 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var refDestinationImplementors = []string{"RefDestination"}
+
+func (ec *executionContext) _RefDestination(ctx context.Context, sel ast.SelectionSet, obj *model.RefDestination) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, refDestinationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RefDestination")
+		case "id":
+			out.Values[i] = ec._RefDestination_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "destinationName":
+			out.Values[i] = ec._RefDestination_destinationName(ctx, field, obj)
+		case "isCombination":
+			out.Values[i] = ec._RefDestination_isCombination(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._RefDestination_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdBy":
+			out.Values[i] = ec._RefDestination_createdBy(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._RefDestination_updatedAt(ctx, field, obj)
+		case "updatedBy":
+			out.Values[i] = ec._RefDestination_updatedBy(ctx, field, obj)
+		case "isActive":
+			out.Values[i] = ec._RefDestination_isActive(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var refDestinationConnectionImplementors = []string{"RefDestinationConnection"}
+
+func (ec *executionContext) _RefDestinationConnection(ctx context.Context, sel ast.SelectionSet, obj *model.RefDestinationConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, refDestinationConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RefDestinationConnection")
+		case "edges":
+			out.Values[i] = ec._RefDestinationConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._RefDestinationConnection_pageInfo(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var refDestinationEdgeImplementors = []string{"RefDestinationEdge"}
+
+func (ec *executionContext) _RefDestinationEdge(ctx context.Context, sel ast.SelectionSet, obj *model.RefDestinationEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, refDestinationEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RefDestinationEdge")
+		case "cursor":
+			out.Values[i] = ec._RefDestinationEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "node":
+			out.Values[i] = ec._RefDestinationEdge_node(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var refDestinationPageInfoImplementors = []string{"RefDestinationPageInfo"}
+
+func (ec *executionContext) _RefDestinationPageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.RefDestinationPageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, refDestinationPageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RefDestinationPageInfo")
+		case "endCursor":
+			out.Values[i] = ec._RefDestinationPageInfo_endCursor(ctx, field, obj)
+		case "hasNextPage":
+			out.Values[i] = ec._RefDestinationPageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9587,6 +10865,40 @@ func (ec *executionContext) marshalNProductEdge2ᚖdjongᚑreaderᚑengineᚋgra
 	return ec._ProductEdge(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNRefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestination(ctx context.Context, sel ast.SelectionSet, v *model.RefDestination) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RefDestination(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRefDestinationConnection2djongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationConnection(ctx context.Context, sel ast.SelectionSet, v model.RefDestinationConnection) graphql.Marshaler {
+	return ec._RefDestinationConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRefDestinationConnection2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationConnection(ctx context.Context, sel ast.SelectionSet, v *model.RefDestinationConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RefDestinationConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRefDestinationEdge2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationEdge(ctx context.Context, sel ast.SelectionSet, v *model.RefDestinationEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RefDestinationEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNSalesPipeline2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSalesPipeline(ctx context.Context, sel ast.SelectionSet, v *model.SalesPipeline) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -10236,6 +11548,75 @@ func (ec *executionContext) marshalOProductPageInfo2ᚖdjongᚑreaderᚑengine�
 	return ec._ProductPageInfo(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalORefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestination(ctx context.Context, sel ast.SelectionSet, v *model.RefDestination) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._RefDestination(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalORefDestinationEdge2ᚕᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.RefDestinationEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRefDestinationEdge2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalORefDestinationOrderByInput2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationOrderByInput(ctx context.Context, v any) (*model.RefDestinationOrderByInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputRefDestinationOrderByInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalORefDestinationPageInfo2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐRefDestinationPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.RefDestinationPageInfo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._RefDestinationPageInfo(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOSalesPipeline2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSalesPipeline(ctx context.Context, sel ast.SelectionSet, v *model.SalesPipeline) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -10356,6 +11737,22 @@ func (ec *executionContext) unmarshalOSortOrderProduct2ᚖdjongᚑreaderᚑengin
 }
 
 func (ec *executionContext) marshalOSortOrderProduct2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderProduct(ctx context.Context, sel ast.SelectionSet, v *model.SortOrderProduct) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOSortOrderRefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderRefDestination(ctx context.Context, v any) (*model.SortOrderRefDestination, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.SortOrderRefDestination)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSortOrderRefDestination2ᚖdjongᚑreaderᚑengineᚋgraphᚋmodelᚐSortOrderRefDestination(ctx context.Context, sel ast.SelectionSet, v *model.SortOrderRefDestination) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

@@ -142,6 +142,36 @@ type ProductPageInfo struct {
 type Query struct {
 }
 
+type RefDestination struct {
+	ID              string     `json:"id"`
+	DestinationName *string    `json:"destinationName,omitempty"`
+	IsCombination   *bool      `json:"isCombination,omitempty"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	CreatedBy       *string    `json:"createdBy,omitempty"`
+	UpdatedAt       *time.Time `json:"updatedAt,omitempty"`
+	UpdatedBy       *string    `json:"updatedBy,omitempty"`
+	IsActive        bool       `json:"isActive"`
+}
+
+type RefDestinationConnection struct {
+	Edges    []*RefDestinationEdge   `json:"edges,omitempty"`
+	PageInfo *RefDestinationPageInfo `json:"pageInfo,omitempty"`
+}
+
+type RefDestinationEdge struct {
+	Cursor string          `json:"cursor"`
+	Node   *RefDestination `json:"node"`
+}
+
+type RefDestinationOrderByInput struct {
+	CreatedAt *SortOrderRefDestination `json:"createdAt,omitempty"`
+}
+
+type RefDestinationPageInfo struct {
+	EndCursor   *string `json:"endCursor,omitempty"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type SalesPipeline struct {
 	ID                 string     `json:"id"`
 	Value              *string    `json:"value,omitempty"`
@@ -330,6 +360,47 @@ func (e *SortOrderProduct) UnmarshalGQL(v any) error {
 }
 
 func (e SortOrderProduct) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SortOrderRefDestination string
+
+const (
+	SortOrderRefDestinationAsc  SortOrderRefDestination = "ASC"
+	SortOrderRefDestinationDesc SortOrderRefDestination = "DESC"
+)
+
+var AllSortOrderRefDestination = []SortOrderRefDestination{
+	SortOrderRefDestinationAsc,
+	SortOrderRefDestinationDesc,
+}
+
+func (e SortOrderRefDestination) IsValid() bool {
+	switch e {
+	case SortOrderRefDestinationAsc, SortOrderRefDestinationDesc:
+		return true
+	}
+	return false
+}
+
+func (e SortOrderRefDestination) String() string {
+	return string(e)
+}
+
+func (e *SortOrderRefDestination) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SortOrderRefDestination(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SortOrderRefDestination", str)
+	}
+	return nil
+}
+
+func (e SortOrderRefDestination) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

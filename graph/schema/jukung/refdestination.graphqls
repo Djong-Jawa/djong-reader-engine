@@ -1,0 +1,39 @@
+type RefDestinationPageInfo {
+    endCursor: String 
+    hasNextPage: Boolean!
+}
+
+type RefDestinationConnection {
+    edges: [RefDestinationEdge!]
+    pageInfo: RefDestinationPageInfo
+}
+
+type RefDestinationEdge {
+    cursor: String!
+    node: RefDestination!
+}
+
+type RefDestination {
+    id: ID!
+    destinationName: String
+    isCombination: Boolean
+    createdAt: Time!
+    createdBy: String
+    updatedAt: Time
+    updatedBy: String
+    isActive: Boolean!
+}
+
+extend type Query {
+    jukungRefDestination(id: ID!): RefDestination
+    jukungRefDestinations(first: Int, after: String, orderBy: RefDestinationOrderByInput): RefDestinationConnection!
+}
+
+enum SortOrderRefDestination {
+    ASC
+    DESC
+}
+
+input RefDestinationOrderByInput {
+    createdAt: SortOrderRefDestination
+}
