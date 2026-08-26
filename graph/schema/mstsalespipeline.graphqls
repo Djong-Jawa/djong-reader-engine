@@ -2,6 +2,7 @@ scalar Time
 
 type PageInfo {
     endCursor: String
+    totalData: Int
     hasNextPage: Boolean!
 }
 
