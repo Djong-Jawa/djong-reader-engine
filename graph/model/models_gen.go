@@ -72,7 +72,8 @@ type LeadPageInfo struct {
 
 type PageInfo struct {
 	EndCursor   *string `json:"endCursor,omitempty"`
-	TotalData   *int32  `json:"totalData,omitempty"`
+	TotalData   int     `json:"totalData"`
+	TotalPage   int     `json:"totalPage"`
 	HasNextPage bool    `json:"hasNextPage"`
 }
 

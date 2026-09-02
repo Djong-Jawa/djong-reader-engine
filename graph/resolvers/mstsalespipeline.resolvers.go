@@ -129,21 +129,36 @@ func (r *queryResolver) SalesPipelines(ctx context.Context, first *int32, after 
 
 	defer totalData.Close()
 
+	// var totalDataValue int
+	var totalDataRow int
 	for totalData.Next() { // 1. Advance to the next database row
-		var totalDataRow string
 
-		values, err := totalData.Scan(&totalDataRow) // 2. Extract column values dynamically
-		if err != nil {
-			log.Fatal(err)
+		if err := totalData.Scan(&totalDataRow); err != nil {
+			log.Println("Error scanning SalesPipeline Total Data:", err)
+			continue
 		}
-		
+
 		// 3. Print the raw data as a readable slice/string
-		fmt.Printf("Row Data (Total Data): %v\n", totalDataRow) 
+		fmt.Printf("Row Data (Total Data): %v\n", totalDataRow)
+	}
+
+	// count the total Page 
+	var totalPage int
+
+	if first != nil && *first > 0 {
+		numerator := int(totalDataRow)
+		denominator := int(*first)
+		totalPage = (numerator + denominator - 1) / denominator
+	} else {
+		// Handle nil, zero, or negative cases appropriately
+		totalPage = 0 
 	}
 
 	pageInfo := &model.PageInfo{
 		EndCursor:   &lastCursor,
 		HasNextPage: len(salesPipelines) == int(limit),
+		TotalData:   totalDataRow,
+		TotalPage:   totalPage,
 	}
 
 	edges := make([]*model.SalesPipelineEdge, len(salesPipelines))

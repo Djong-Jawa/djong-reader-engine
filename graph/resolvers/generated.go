@@ -103,6 +103,7 @@ type ComplexityRoot struct {
 		EndCursor   func(childComplexity int) int
 		HasNextPage func(childComplexity int) int
 		TotalData   func(childComplexity int) int
+		TotalPage   func(childComplexity int) int
 	}
 
 	PricingTier struct {
@@ -481,6 +482,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PageInfo.TotalData(childComplexity), true
+
+	case "PageInfo.totalPage":
+		if e.complexity.PageInfo.TotalPage == nil {
+			break
+		}
+
+		return e.complexity.PageInfo.TotalPage(childComplexity), true
 
 	case "PricingTier.createdAt":
 		if e.complexity.PricingTier.CreatedAt == nil {
@@ -1251,10 +1259,12 @@ input ProductOrderByInput {
 }
 `, BuiltIn: false},
 	{Name: "../schema/mstsalespipeline.graphqls", Input: `scalar Time
+scalar Int64
 
 type PageInfo {
     endCursor: String
-    totalData: Int
+    totalData: Int64!
+    totalPage: Int64!
     hasNextPage: Boolean!
 }
 
@@ -3326,11 +3336,14 @@ func (ec *executionContext) _PageInfo_totalData(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int32)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+	return ec.marshalNInt642int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PageInfo_totalData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3340,7 +3353,51 @@ func (ec *executionContext) fieldContext_PageInfo_totalData(_ context.Context, f
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type Int64 does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PageInfo_totalPage(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PageInfo_totalPage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt642int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PageInfo_totalPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int64 does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6793,6 +6850,8 @@ func (ec *executionContext) fieldContext_SalesPipelineConnection_pageInfo(_ cont
 				return ec.fieldContext_PageInfo_endCursor(ctx, field)
 			case "totalData":
 				return ec.fieldContext_PageInfo_totalData(ctx, field)
+			case "totalPage":
+				return ec.fieldContext_PageInfo_totalPage(ctx, field)
 			case "hasNextPage":
 				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
 			}
@@ -9414,6 +9473,14 @@ func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._PageInfo_endCursor(ctx, field, obj)
 		case "totalData":
 			out.Values[i] = ec._PageInfo_totalData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalPage":
+			out.Values[i] = ec._PageInfo_totalPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "hasNextPage":
 			out.Values[i] = ec._PageInfo_hasNextPage(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -10809,6 +10876,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (str
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt642int(ctx context.Context, v any) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt642int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

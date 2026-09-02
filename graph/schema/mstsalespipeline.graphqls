@@ -1,8 +1,10 @@
 scalar Time
+scalar Int64
 
 type PageInfo {
     endCursor: String
-    totalData: Int
+    totalData: Int64!
+    totalPage: Int64!
     hasNextPage: Boolean!
 }
 
